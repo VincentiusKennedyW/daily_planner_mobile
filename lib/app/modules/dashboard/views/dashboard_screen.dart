@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:expense_tracker/app/data/models/task_models/task_model.dart';
+import 'package:expense_tracker/app/modules/daily_planner/controllers/task_controller.dart';
 import 'package:expense_tracker/app/modules/dashboard/controllers/leaderboard_controller.dart';
 import 'package:expense_tracker/app/modules/dashboard/controllers/task_assignee_controller.dart';
 import 'package:expense_tracker/core/task.dart';
@@ -27,6 +29,7 @@ class _DashboardScreenState extends State<DashboardScreen>
       Get.find<TaskAssigneeController>();
   final LeaderboardController _leaderboardController =
       Get.find<LeaderboardController>();
+  final TaskController myTasks = Get.find<TaskController>();
 
   final GetStorage _storage = GetStorage();
 
@@ -206,7 +209,9 @@ class _DashboardScreenState extends State<DashboardScreen>
                 ),
                 SizedBox(height: 16),
                 // Masih pakai data statis untuk aktivitas
-                // ...myTasks.take(3).map((task) => _buildActivityItem(task)),
+                ...myTasks.tasks
+                    .take(3)
+                    .map((task) => _buildActivityItem(task)),
                 SizedBox(height: 32),
                 Text(
                   'Produktivitas Tim',
@@ -483,7 +488,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 
-  Widget _buildActivityItem(Task task) {
+  Widget _buildActivityItem(TaskListModel task) {
     return Container(
       margin: EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.all(16),

@@ -1,6 +1,7 @@
 import 'package:expense_tracker/app/modules/auth/bindings/auth_binding.dart';
-import 'package:expense_tracker/app/modules/auth/middleware/auth_middleware.dart';
+import 'package:expense_tracker/app/data/middleware/auth_middleware.dart';
 import 'package:expense_tracker/app/modules/auth/views/login_screen.dart';
+import 'package:expense_tracker/app/modules/daily_planner/bindings/task_binding.dart';
 import 'package:expense_tracker/app/modules/dashboard/bindings/leaderboard_binding.dart';
 import 'package:expense_tracker/app/modules/dashboard/bindings/task_assignee_binding.dart';
 import 'package:expense_tracker/main.dart';
@@ -21,6 +22,7 @@ class AppRoutes {
       page: () => const MainScreen(),
       bindings: [
         AuthBinding(),
+        TaskBinding(),
         TaskAssigneeBinding(),
         LeaderboardBinding(),
       ],

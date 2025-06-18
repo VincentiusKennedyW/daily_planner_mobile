@@ -1,16 +1,16 @@
-class LeaderboardModel {
+class LeaderboardResponse {
   final String status;
   final String message;
   final LeaderboardData data;
 
-  LeaderboardModel({
+  LeaderboardResponse({
     required this.status,
     required this.message,
     required this.data,
   });
 
-  factory LeaderboardModel.fromJson(Map<String, dynamic> json) {
-    return LeaderboardModel(
+  factory LeaderboardResponse.fromJson(Map<String, dynamic> json) {
+    return LeaderboardResponse(
       status: json['status'],
       message: json['message'],
       data: LeaderboardData.fromJson(json['data']),

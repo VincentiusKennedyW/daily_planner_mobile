@@ -1,7 +1,12 @@
+import 'package:expense_tracker/app/modules/daily_planner/controllers/task_controller.dart';
+import 'package:expense_tracker/app/data/models/task_models/task_model.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/task_detail_sheet.dart';
 import 'package:expense_tracker/core/task.dart';
 import 'package:expense_tracker/main.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
 
 class DailyPlannerScreen extends StatefulWidget {
   const DailyPlannerScreen({super.key});
@@ -14,6 +19,8 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
 
+  final TaskController taskController = Get.find<TaskController>();
+
   @override
   void initState() {
     super.initState();
@@ -22,8 +29,6 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
 
   @override
   Widget build(BuildContext context) {
-    final todayTasks = TaskManager.getTasksForToday();
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -36,40 +41,44 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
           unselectedLabelColor: Colors.grey[600],
           indicatorColor: Color(0xFF6366F1),
           tabs: [
-            Tab(
+            Obx(() => Tab(
                 text:
-                    'To Do (${todayTasks.where((t) => t.status == TaskStatus.todo).length})'),
-            Tab(
+                    'To Do (${taskController.tasks.where((t) => t.status == TaskStatus.todo).length})')),
+            Obx(() => Tab(
                 text:
-                    'Progress (${todayTasks.where((t) => t.status == TaskStatus.inProgress).length})'),
-            Tab(
+                    'Progress (${taskController.tasks.where((t) => t.status == TaskStatus.inProgress).length})')),
+            Obx(() => Tab(
                 text:
-                    'Done (${todayTasks.where((t) => t.status == TaskStatus.completed).length})'),
-            Tab(
+                    'Done (${taskController.tasks.where((t) => t.status == TaskStatus.completed).length})')),
+            Obx(() => Tab(
                 text:
-                    'Blocked (${todayTasks.where((t) => t.status == TaskStatus.blocked).length})'),
+                    'Blocked (${taskController.tasks.where((t) => t.status == TaskStatus.blocked).length})')),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildTaskList(
-              todayTasks.where((t) => t.status == TaskStatus.todo).toList()),
-          _buildTaskList(todayTasks
-              .where((t) => t.status == TaskStatus.inProgress)
-              .toList()),
-          _buildTaskList(todayTasks
-              .where((t) => t.status == TaskStatus.completed)
-              .toList()),
-          _buildTaskList(
-              todayTasks.where((t) => t.status == TaskStatus.blocked).toList()),
+          Obx(
+            () => _buildTaskList(taskController.tasks
+                .where((task) => task.status == TaskStatus.todo)
+                .toList()),
+          ),
+          Obx(() => _buildTaskList(taskController.tasks
+              .where((task) => task.status == TaskStatus.inProgress)
+              .toList())),
+          Obx(() => _buildTaskList(taskController.tasks
+              .where((task) => task.status == TaskStatus.completed)
+              .toList())),
+          Obx(() => _buildTaskList(taskController.tasks
+              .where((task) => task.status == TaskStatus.blocked)
+              .toList())),
         ],
       ),
     );
   }
 
-  Widget _buildTaskList(List<Task> tasks) {
+  Widget _buildTaskList(List<TaskListModel> tasks) {
     if (tasks.isEmpty) {
       return Center(
         child: Column(
@@ -102,6 +111,7 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
       );
     }
 
+    // return Text("OK"); // Placeholder for the task list widget
     return ListView.builder(
       padding: EdgeInsets.all(16),
       itemCount: tasks.length,
@@ -111,7 +121,7 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
     );
   }
 
-  Widget _buildTaskCard(Task task) {
+  Widget _buildTaskCard(TaskListModel task) {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -125,14 +135,15 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
           ),
         ],
         border: Border.all(
-          color: task.isOverdue
+          color: task.status == TaskStatus.overdue
               ? Colors.red.withOpacity(0.3)
               : task.category.color.withOpacity(0.2),
           width: 1,
         ),
       ),
       child: InkWell(
-        onTap: () => _showTaskDetail(task),
+        // onTap: () => _showTaskDetail(task),
+        onTap: () {},
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: EdgeInsets.all(20),
@@ -180,15 +191,15 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
                       ],
                     ),
                   ),
-                  PopupMenuButton<String>(
-                    onSelected: (value) => _handleTaskAction(task, value),
-                    itemBuilder: (context) => [
-                      PopupMenuItem(value: 'edit', child: Text('Edit')),
-                      PopupMenuItem(value: 'comment', child: Text('Komentar')),
-                      PopupMenuItem(value: 'assign', child: Text('Assign')),
-                      PopupMenuItem(value: 'delete', child: Text('Hapus')),
-                    ],
-                  ),
+                  // PopupMenuButton<String>(
+                  //   onSelected: (value) => _handleTaskAction(task, value),
+                  //   itemBuilder: (context) => [
+                  //     PopupMenuItem(value: 'edit', child: Text('Edit')),
+                  //     PopupMenuItem(value: 'comment', child: Text('Komentar')),
+                  //     PopupMenuItem(value: 'assign', child: Text('Assign')),
+                  //     PopupMenuItem(value: 'delete', child: Text('Hapus')),
+                  //   ],
+                  // ),
                 ],
               ),
               if (task.description.isNotEmpty) ...[
@@ -236,7 +247,7 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
                     ),
                   ),
                   Spacer(),
-                  if (task.isOverdue)
+                  if (task.status == TaskStatus.overdue)
                     Icon(Icons.warning_rounded, color: Colors.red, size: 16),
                   if (task.dueDate != null) ...[
                     Icon(Icons.schedule_rounded,
@@ -245,7 +256,9 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
                     Text(
                       _formatDate(task.dueDate!),
                       style: TextStyle(
-                        color: task.isOverdue ? Colors.red : Colors.grey[600],
+                        color: task.status == TaskStatus.overdue
+                            ? Colors.red
+                            : Colors.grey[600],
                         fontSize: 12,
                       ),
                     ),
@@ -253,78 +266,97 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
                 ],
               ),
               SizedBox(height: 12),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 12,
-                    backgroundColor: Color(0xFF6366F1).withOpacity(0.1),
-                    child: Text(
-                      task.assignee[0],
+              Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: task.assignees!.map((assignee) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 2),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 12,
+                                backgroundColor:
+                                    Color(0xFF6366F1).withOpacity(0.1),
+                                child: Text(
+                                  assignee.name[0].toUpperCase(),
+                                  style: TextStyle(
+                                    color: Color(0xFF6366F1),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                assignee.name,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      '${task.category.points} poin',
                       style: TextStyle(
                         color: Color(0xFF6366F1),
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    task.assignee,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  Spacer(),
-                  Text(
-                    '${task.category.points} poin',
-                    style: TextStyle(
-                      color: Color(0xFF6366F1),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+
               if (task.status != TaskStatus.completed) ...[
                 SizedBox(height: 16),
                 Row(
                   children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () =>
-                            _updateTaskStatus(task, TaskStatus.inProgress),
-                        icon: Icon(Icons.play_arrow_rounded, size: 16),
-                        label: Text('Mulai', style: TextStyle(fontSize: 12)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue.withOpacity(0.1),
-                          foregroundColor: Colors.blue,
-                          elevation: 0,
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Expanded(
+                    //   child: ElevatedButton.icon(
+                    //     onPressed: () =>
+                    //         _updateTaskStatus(task, TaskStatus.inProgress),
+                    //     icon: Icon(Icons.play_arrow_rounded, size: 16),
+                    //     label: Text('Mulai', style: TextStyle(fontSize: 12)),
+                    //     style: ElevatedButton.styleFrom(
+                    //       backgroundColor: Colors.blue.withOpacity(0.1),
+                    //       foregroundColor: Colors.blue,
+                    //       elevation: 0,
+                    //       padding: EdgeInsets.symmetric(vertical: 8),
+                    //       shape: RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(8),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     SizedBox(width: 8),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () =>
-                            _updateTaskStatus(task, TaskStatus.completed),
-                        icon: Icon(Icons.check_rounded, size: 16),
-                        label: Text('Selesai', style: TextStyle(fontSize: 12)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green.withOpacity(0.1),
-                          foregroundColor: Colors.green,
-                          elevation: 0,
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Expanded(
+                    //   child: ElevatedButton.icon(
+                    //     onPressed: () =>
+                    //         _updateTaskStatus(task, TaskStatus.completed),
+                    //     icon: Icon(Icons.check_rounded, size: 16),
+                    //     label: Text('Selesai', style: TextStyle(fontSize: 12)),
+                    //     style: ElevatedButton.styleFrom(
+                    //       backgroundColor: Colors.green.withOpacity(0.1),
+                    //       foregroundColor: Colors.green,
+                    //       elevation: 0,
+                    //       padding: EdgeInsets.symmetric(vertical: 8),
+                    //       shape: RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(8),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ],
@@ -335,31 +367,31 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
     );
   }
 
-  void _showTaskDetail(Task task) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => TaskDetailSheet(task: task),
-    );
-  }
+  // void _showTaskDetail(TaskListModel task) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (context) => TaskDetailSheet(task: task),
+  //   );
+  // }
 
-  void _handleTaskAction(Task task, String action) {
-    switch (action) {
-      case 'edit':
-        _showEditTaskDialog(task);
-        break;
-      case 'comment':
-        _showAddCommentDialog(task);
-        break;
-      case 'assign':
-        _showAssignDialog(task);
-        break;
-      case 'delete':
-        _showDeleteConfirmation(task);
-        break;
-    }
-  }
+  // void _handleTaskAction(Task task, String action) {
+  //   switch (action) {
+  //     case 'edit':
+  //       _showEditTaskDialog(task);
+  //       break;
+  //     case 'comment':
+  //       _showAddCommentDialog(task);
+  //       break;
+  //     case 'assign':
+  //       _showAssignDialog(task);
+  //       break;
+  //     case 'delete':
+  //       _showDeleteConfirmation(task);
+  //       break;
+  //   }
+  // }
 
   void _updateTaskStatus(Task task, TaskStatus status) {
     setState(() {
@@ -463,14 +495,14 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
     );
   }
 
-  void _showEditTaskDialog(Task task) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => EditTaskSheet(task: task),
-    );
-  }
+  // void _showEditTaskDialog(Task task) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (context) => EditTaskSheet(task: task),
+  //   );
+  // }
 
   String _formatDate(DateTime date) {
     final now = DateTime.now();

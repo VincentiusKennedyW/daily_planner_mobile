@@ -15,7 +15,16 @@ enum TaskCategory {
 
 enum TaskPriority { low, medium, high, urgent }
 
-enum TaskStatus { todo, inProgress, completed, blocked }
+enum TaskStatus {
+  todo,
+  inProgress,
+  completed,
+  cancelled,
+  overdue,
+  onReview,
+  onHold,
+  blocked
+}
 
 extension TaskCategoryExtension on TaskCategory {
   String get name {
@@ -156,6 +165,14 @@ extension TaskStatusExtension on TaskStatus {
         return 'In Progress';
       case TaskStatus.completed:
         return 'Completed';
+      case TaskStatus.cancelled:
+        return 'Cancelled';
+      case TaskStatus.overdue:
+        return 'Overdue';
+      case TaskStatus.onReview:
+        return 'On Review';
+      case TaskStatus.onHold:
+        return 'On Hold';
       case TaskStatus.blocked:
         return 'Blocked';
     }
@@ -169,6 +186,14 @@ extension TaskStatusExtension on TaskStatus {
         return Colors.blue;
       case TaskStatus.completed:
         return Colors.green;
+      case TaskStatus.cancelled:
+        return Colors.grey.shade600;
+      case TaskStatus.overdue:
+        return Colors.red.shade700;
+      case TaskStatus.onReview:
+        return Colors.orange;
+      case TaskStatus.onHold:
+        return Colors.amber;
       case TaskStatus.blocked:
         return Colors.red;
     }

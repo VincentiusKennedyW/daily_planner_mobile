@@ -1,8 +1,12 @@
 import 'dart:math' as math;
 
+import 'package:expense_tracker/app/data/models/task_models/create_task_model.dart';
+import 'package:expense_tracker/app/modules/daily_planner/controllers/task_controller.dart';
 import 'package:expense_tracker/core/task.dart';
 import 'package:expense_tracker/main.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class AdvancedAddTaskSheet extends StatefulWidget {
   const AdvancedAddTaskSheet({super.key});
@@ -19,9 +23,11 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
   String _selectedAssignee = TaskManager.currentUser;
   DateTime? _dueDate;
   int _estimatedHours = 1;
+  final List<int> _assignees = [];
   final List<String> _tags = [];
   final _tagController = TextEditingController();
 
+  final TaskController taskController = Get.find<TaskController>();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -73,7 +79,6 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
                     ),
                   ),
                   SizedBox(height: 20),
-
                   _buildSectionTitle('Deskripsi'),
                   TextField(
                     controller: _descriptionController,
@@ -87,7 +92,6 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
                     ),
                   ),
                   SizedBox(height: 20),
-
                   _buildSectionTitle('Kategori'),
                   SizedBox(
                     height: 120,
@@ -159,7 +163,6 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
                     ),
                   ),
                   SizedBox(height: 20),
-
                   Row(
                     children: [
                       Expanded(
@@ -229,7 +232,6 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
                     ],
                   ),
                   SizedBox(height: 20),
-
                   Row(
                     children: [
                       Expanded(
@@ -313,7 +315,6 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
                     ],
                   ),
                   SizedBox(height: 20),
-
                   _buildSectionTitle('Tags'),
                   Row(
                     children: [
@@ -408,7 +409,31 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
                 Expanded(
                   flex: 2,
                   child: ElevatedButton(
-                    onPressed: _createTask,
+                    onPressed: () async {
+                      final newTask = CreateTaskModel(
+                        title: _titleController.text,
+                        description: _descriptionController.text,
+                        category: _selectedCategory,
+                        priority: _selectedPriority,
+                        status: TaskStatus.todo,
+                        assignees: [],
+                        dueDate: _dueDate,
+                        tags: _tags,
+                        estimatedHours: _estimatedHours,
+                        point: _selectedCategory.points,
+                      );
+
+                      final success = await taskController.createTask(newTask);
+
+                      if (success) {
+                        // misalnya close dialog atau tampilkan snackbar
+                        // Get.back(); // atau Navigator.pop(context);
+                        Get.snackbar('Sukses', 'Task berhasil dibuat');
+                      } else {
+                        Get.snackbar(
+                            'Error', taskController.errorMessageCreate.value);
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF6366F1),
                       foregroundColor: Colors.white,
@@ -450,7 +475,14 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
       lastDate: DateTime.now().add(Duration(days: 365)),
     );
     if (date != null) {
-      setState(() => _dueDate = date);
+      setState(() => _dueDate = DateTime(
+            date.year,
+            date.month,
+            date.day,
+            23,
+            59,
+            59,
+          ));
     }
   }
 

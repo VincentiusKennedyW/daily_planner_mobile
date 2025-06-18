@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:expense_tracker/app/modules/dashboard/models/leaderboard_model.dart';
+import 'package:expense_tracker/app/data/models/leaderboard_model.dart';
 import 'package:expense_tracker/core/config.dart';
 
 class LeaderboardController extends GetxController {
@@ -35,7 +35,7 @@ class LeaderboardController extends GetxController {
 
       if (response.statusCode == 200) {
         final leaderboardResponse =
-            LeaderboardModel.fromJson(json.decode(response.body));
+            LeaderboardResponse.fromJson(json.decode(response.body));
 
         if (leaderboardResponse.status == 'success') {
           leaderboard.value = leaderboardResponse.data.leaderboard;

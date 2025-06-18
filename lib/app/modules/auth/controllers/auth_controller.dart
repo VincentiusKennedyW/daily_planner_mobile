@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:expense_tracker/app/modules/auth/models/login_response.dart';
-import 'package:expense_tracker/app/modules/auth/models/user_model.dart';
+import 'package:expense_tracker/app/data/models/login_response.dart';
+import 'package:expense_tracker/app/data/models/user_model.dart';
 import 'package:expense_tracker/core/config.dart';
 
 class AuthController extends GetxController {
@@ -53,7 +53,7 @@ class AuthController extends GetxController {
         }),
       );
 
-      final loginResponse = LoginModel.fromJson(jsonDecode(response.body));
+      final loginResponse = LoginResponse.fromJson(jsonDecode(response.body));
 
       if (response.statusCode == 200 && loginResponse.status == 'success') {
         await _saveUserData(

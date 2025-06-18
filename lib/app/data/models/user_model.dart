@@ -17,7 +17,6 @@ class UserModel {
     this.phone,
   });
 
-  // From JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'],
@@ -30,7 +29,6 @@ class UserModel {
     );
   }
 
-  // To JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -43,7 +41,6 @@ class UserModel {
     };
   }
 
-  // Copy with method
   UserModel copyWith({
     int? id,
     String? name,
@@ -62,5 +59,57 @@ class UserModel {
       nik: nik ?? this.nik,
       phone: phone ?? this.phone,
     );
+  }
+}
+
+class UserResponse {
+  final int id;
+  final String name;
+
+  UserResponse({
+    required this.id,
+    required this.name,
+  });
+
+  factory UserResponse.fromJson(Map<String, dynamic> json) {
+    return UserResponse(
+      id: json['id'],
+      name: json['name'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+    };
+  }
+}
+
+class User {
+  final int id;
+  final String name;
+  final String email;
+
+  User({
+    required this.id,
+    required this.name,
+    required this.email,
+  });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'],
+      name: json['name'],
+      email: json['email'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+    };
   }
 }

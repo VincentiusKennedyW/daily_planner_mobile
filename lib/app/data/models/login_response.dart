@@ -1,18 +1,18 @@
-import 'package:expense_tracker/app/modules/auth/models/user_model.dart';
+import 'package:expense_tracker/app/data/models/user_model.dart';
 
-class LoginModel {
+class LoginResponse {
   final String status;
   final String message;
   final LoginData? data;
 
-  LoginModel({
+  LoginResponse({
     required this.status,
     required this.message,
     required this.data,
   });
 
-  factory LoginModel.fromJson(Map<String, dynamic> json) {
-    return LoginModel(
+  factory LoginResponse.fromJson(Map<String, dynamic> json) {
+    return LoginResponse(
       status: json['status'],
       message: json['message'],
       data: json['data'] != null ? LoginData.fromJson(json['data']) : null,

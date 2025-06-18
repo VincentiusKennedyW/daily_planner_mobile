@@ -1,18 +1,20 @@
+import 'package:expense_tracker/app/data/models/task_models/period_model.dart';
+import 'package:expense_tracker/app/data/models/user_model.dart';
 import 'package:expense_tracker/core/task_model.dart';
 
-class TaskAssigneeModel {
+class TaskAssigneeResponse {
   final String status;
   final String message;
   final TaskAssigneeData data;
 
-  TaskAssigneeModel({
+  TaskAssigneeResponse({
     required this.status,
     required this.message,
     required this.data,
   });
 
-  factory TaskAssigneeModel.fromJson(Map<String, dynamic> json) {
-    return TaskAssigneeModel(
+  factory TaskAssigneeResponse.fromJson(Map<String, dynamic> json) {
+    return TaskAssigneeResponse(
       status: json['status'],
       message: json['message'],
       data: TaskAssigneeData.fromJson(json['data']),
@@ -84,62 +86,3 @@ class TaskAssigneeData {
   }
 }
 
-class User {
-  final int id;
-  final String name;
-  final String email;
-
-  User({
-    required this.id,
-    required this.name,
-    required this.email,
-  });
-
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'email': email,
-    };
-  }
-}
-
-class Period {
-  final int year;
-  final int month;
-  final String startDate;
-  final String endDate;
-
-  Period({
-    required this.year,
-    required this.month,
-    required this.startDate,
-    required this.endDate,
-  });
-
-  factory Period.fromJson(Map<String, dynamic> json) {
-    return Period(
-      year: json['year'],
-      month: json['month'],
-      startDate: json['startDate'],
-      endDate: json['endDate'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'year': year,
-      'month': month,
-      'startDate': startDate,
-      'endDate': endDate,
-    };
-  }
-}

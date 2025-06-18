@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/auth_controller.dart';
+import '../../modules/auth/controllers/auth_controller.dart';
 
 class AuthMiddleware extends GetMiddleware {
   @override

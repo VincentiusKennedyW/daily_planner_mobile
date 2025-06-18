@@ -6,12 +6,12 @@ import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:expense_tracker/app/modules/dashboard/models/task_assignee_model.dart';
+import 'package:expense_tracker/app/data/models/responses/task_assignee_response.dart';
 import 'package:expense_tracker/core/config.dart';
 
 class TaskAssigneeController extends GetxController {
-  final Rxn<TaskAssigneeModel> totalTaskStatistics = Rxn<TaskAssigneeModel>();
-  final Rxn<TaskAssigneeModel> monthlyTaskStatistics = Rxn<TaskAssigneeModel>();
+  final Rxn<TaskAssigneeResponse> totalTaskStatistics = Rxn<TaskAssigneeResponse>();
+  final Rxn<TaskAssigneeResponse> monthlyTaskStatistics = Rxn<TaskAssigneeResponse>();
   final RxBool isLoading = false.obs;
   final RxBool isLoadingMonthly = false.obs;
   final RxString errorMessage = ''.obs;
@@ -41,7 +41,7 @@ class TaskAssigneeController extends GetxController {
 
       if (response.statusCode == 200) {
         final taskStatisticsResponse =
-            TaskAssigneeModel.fromJson(json.decode(response.body));
+            TaskAssigneeResponse.fromJson(json.decode(response.body));
 
         if (taskStatisticsResponse.status == 'success') {
           totalTaskStatistics.value = taskStatisticsResponse;
@@ -89,7 +89,7 @@ class TaskAssigneeController extends GetxController {
 
       if (response.statusCode == 200) {
         final taskMonthlyResponse =
-            TaskAssigneeModel.fromJson(json.decode(response.body));
+            TaskAssigneeResponse.fromJson(json.decode(response.body));
 
         if (taskMonthlyResponse.status == 'success') {
           monthlyTaskStatistics.value = taskMonthlyResponse;
