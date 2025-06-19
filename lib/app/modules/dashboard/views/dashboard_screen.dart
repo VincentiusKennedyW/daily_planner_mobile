@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:expense_tracker/app/data/models/task_models/task_model.dart';
-import 'package:expense_tracker/app/modules/daily_planner/controllers/task_controller.dart';
 import 'package:expense_tracker/app/modules/dashboard/controllers/leaderboard_controller.dart';
+import 'package:expense_tracker/app/modules/dashboard/controllers/recent_activity_controller.dart';
 import 'package:expense_tracker/app/modules/dashboard/controllers/task_assignee_controller.dart';
 import 'package:expense_tracker/core/task.dart';
 import 'package:expense_tracker/main.dart';
@@ -29,7 +29,8 @@ class _DashboardScreenState extends State<DashboardScreen>
       Get.find<TaskAssigneeController>();
   final LeaderboardController _leaderboardController =
       Get.find<LeaderboardController>();
-  final TaskController myTasks = Get.find<TaskController>();
+  final RecentActivityController _recentActivityController =
+      Get.find<RecentActivityController>();
 
   final GetStorage _storage = GetStorage();
 
@@ -199,7 +200,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                   ),
                 ),
 
-                SizedBox(height: 32),
                 Text(
                   'Aktivitas Terbaru',
                   style: TextStyle(
@@ -207,12 +207,28 @@ class _DashboardScreenState extends State<DashboardScreen>
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 16),
-                // Masih pakai data statis untuk aktivitas
-                ...myTasks.tasks
-                    .take(3)
-                    .map((task) => _buildActivityItem(task)),
-                SizedBox(height: 32),
+                Obx(() {
+                  final recentList = _recentActivityController.recentActivities;
+
+                  if (_recentActivityController.isLoading.value) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  if (recentList.isEmpty) {
+                    return Text("Belum ada aktivitas terbaru.");
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 16),
+                      ...recentList
+                          .take(3)
+                          .map((task) => _buildActivityItem(task)),
+                      SizedBox(height: 16),
+                    ],
+                  );
+                }),
                 Text(
                   'Produktivitas Tim',
                   style: TextStyle(

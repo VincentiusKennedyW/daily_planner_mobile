@@ -8,35 +8,62 @@ import 'package:expense_tracker/app/data/models/responses/task_response.dart';
 import 'package:expense_tracker/app/data/models/task_models/create_task_model.dart';
 import 'package:expense_tracker/app/data/models/task_models/task_model.dart';
 import 'package:expense_tracker/core/config.dart';
+import 'package:expense_tracker/core/task.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
 class TaskController extends GetxController {
-  final RxList<TaskListModel> tasks = <TaskListModel>[].obs;
-  final Rxn<CreatedTaskModel> createdTask = Rxn<CreatedTaskModel>();
-  final Rxn<Pagination> pagination = Rxn<Pagination>();
-  final RxBool isLoading = false.obs;
+  final RxList<TaskListModel> todoTasks = <TaskListModel>[].obs;
+  final RxList<TaskListModel> inProgressTasks = <TaskListModel>[].obs;
+  final RxList<TaskListModel> completedTasks = <TaskListModel>[].obs;
+  final RxList<TaskListModel> blockedTasks = <TaskListModel>[].obs;
+
+  final Rxn<Pagination> todoPagination = Rxn<Pagination>();
+  final Rxn<Pagination> inProgressPagination = Rxn<Pagination>();
+  final Rxn<Pagination> completedPagination = Rxn<Pagination>();
+  final Rxn<Pagination> blockedPagination = Rxn<Pagination>();
+
+  final RxBool isTodoLoading = false.obs;
+  final RxBool isInProgressLoading = false.obs;
+  final RxBool isCompletedLoading = false.obs;
+  final RxBool isBlockedLoading = false.obs;
   final RxBool isLoadingCreate = false.obs;
-  final RxString errorMessage = ''.obs;
+
+  final RxString todoError = ''.obs;
+  final RxString inProgressError = ''.obs;
+  final RxString completedError = ''.obs;
+  final RxString blockedError = ''.obs;
   final RxString errorMessageCreate = ''.obs;
 
+  final Rxn<CreatedTaskModel> createdTask = Rxn<CreatedTaskModel>();
   final GetStorage _storage = GetStorage();
   final String baseUrl = Config.url;
 
   @override
   void onInit() {
     super.onInit();
-    getTasks();
+    loadAllTabs();
   }
 
-  Future<void> getTasks({int page = 1, int limit = 10}) async {
-    try {
-      isLoading.value = true;
-      errorMessage.value = '';
+  Future<void> loadAllTabs() async {
+    await Future.wait([
+      getTasksByStatus(TaskStatus.todo),
+      getTasksByStatus(TaskStatus.inProgress),
+      getTasksByStatus(TaskStatus.completed),
+      getTasksByStatus(TaskStatus.blocked),
+    ]);
+  }
 
-      final url = '$baseUrl/tasks?page=$page&limit=$limit';
+  Future<void> getTasksByStatus(TaskStatus status,
+      {int page = 1, int limit = 10}) async {
+    try {
+      _setLoadingState(status, true);
+      _setErrorMessage(status, '');
+
+      final url =
+          '$baseUrl/tasks?page=$page&limit=$limit&status=${status.name}';
       final token = _storage.read('token');
 
       final response = await http.get(Uri.parse(url), headers: {
@@ -50,19 +77,30 @@ class TaskController extends GetxController {
             GetAllTasksResponse.fromJson(json.decode(response.body));
 
         if (taskResponse.status == 'success') {
-          tasks.assignAll(taskResponse.data.tasks);
-          pagination.value = taskResponse.data.pagination;
+          _updateTasksByStatus(status, taskResponse.data?.tasks ?? []);
+          _updatePaginationByStatus(
+              status, taskResponse.data?.pagination ?? Pagination());
         } else {
-          errorMessage.value = taskResponse.message;
+          _setErrorMessage(status, taskResponse.message);
         }
       } else {
-        errorMessage.value = 'HTTP Error: ${response.statusCode}';
+        _setErrorMessage(status, 'HTTP Error: ${response.statusCode}');
       }
     } catch (e) {
-      errorMessage.value = 'Failed to load tasks: $e';
+      _setErrorMessage(status, 'Failed to load tasks: $e');
     } finally {
-      isLoading.value = false;
+      _setLoadingState(status, false);
     }
+  }
+
+  // Method untuk refresh tab tertentu
+  Future<void> refreshTab(TaskStatus status) async {
+    await getTasksByStatus(status);
+  }
+
+  // Method untuk refresh semua tab
+  Future<void> refreshAllTabs() async {
+    await loadAllTabs();
   }
 
   Future<bool> createTask(CreateTaskModel createTaskModel) async {
@@ -72,11 +110,6 @@ class TaskController extends GetxController {
 
       final url = '$baseUrl/task';
       final token = _storage.read('token');
-
-      developer.log(
-        'Creating task: ${createTaskModel.toJson()}',
-        name: 'TaskController',
-      );
 
       final response = await http.post(
         Uri.parse(url),
@@ -88,48 +121,48 @@ class TaskController extends GetxController {
         body: json.encode(createTaskModel.toJson()),
       );
 
-      developer.log(
-        'Create task response: ${response.statusCode} - ${response.body}',
-        name: 'TaskController',
-      );
-
-      // Handle response berdasarkan status code
       if (response.statusCode == 201) {
-        // Success response
         final taskResponse =
             CreateTaskResponse.fromJson(json.decode(response.body));
 
         if (taskResponse.status == 'success') {
           createdTask.value = taskResponse.data;
+          switch (taskResponse.data.status) {
+            case TaskStatus.todo:
+              todoTasks.insert(
+                  0,
+                  TaskListModel(
+                    id: taskResponse.data.id,
+                    title: taskResponse.data.title,
+                    description: taskResponse.data.description,
+                    category: taskResponse.data.category,
+                    point: taskResponse.data.point,
+                    priority: taskResponse.data.priority,
+                    assignees: taskResponse.data.assignees,
+                    dueDate: taskResponse.data.dueDate,
+                    tags: taskResponse.data.tags,
+                    estimatedHours: taskResponse.data.estimatedHours,
+                    status: TaskStatus.todo,
+                    createdAt: taskResponse.data.createdAt,
+                    updatedAt: DateTime.now(),
+                    creator: taskResponse.data.creator,
+                  ));
 
-          developer.log(
-            'Task created successfully: ${taskResponse.data.title}',
-            name: 'TaskController',
-          );
-
-          // Refresh tasks list after creating new task
-          await getTasks();
+              break;
+            default:
+              break;
+          }
           return true;
         } else {
-          // Success status code but response status is not success
           errorMessageCreate.value = taskResponse.message;
-          developer.log(
-            'Error in response: ${taskResponse.message}',
-            name: 'TaskController',
-          );
+
           return false;
         }
       } else {
-        // Error status codes (400, 401, 422, 500, etc.)
         return _handleErrorResponse(response);
       }
     } catch (e) {
-      // Network error, parsing error, etc.
       errorMessageCreate.value = 'Failed to create task: $e';
-      developer.log(
-        'Exception creating task: $e',
-        name: 'TaskController',
-      );
       return false;
     } finally {
       isLoadingCreate.value = false;
@@ -192,63 +225,163 @@ class TaskController extends GetxController {
     }
   }
 
-// Alternative method dengan try-catch yang lebih spesifik
-  Future<bool> createTaskWithDetailedErrorHandling(
-      CreateTaskModel createTaskModel) async {
-    try {
-      isLoadingCreate.value = true;
-      errorMessageCreate.value = '';
+// // Alternative method dengan try-catch yang lebih spesifik
+//   Future<bool> createTaskWithDetailedErrorHandling(
+//       CreateTaskModel createTaskModel) async {
+//     try {
+//       isLoadingCreate.value = true;
+//       errorMessageCreate.value = '';
 
-      final url = '$baseUrl/task';
-      final token = _storage.read('token');
+//       final url = '$baseUrl/task';
+//       final token = _storage.read('token');
 
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: json.encode(createTaskModel.toJson()),
-      );
+//       final response = await http.post(
+//         Uri.parse(url),
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'Accept': 'application/json',
+//           'Authorization': 'Bearer $token',
+//         },
+//         body: json.encode(createTaskModel.toJson()),
+//       );
 
-      if (response.statusCode == 201) {
-        final taskResponse =
-            CreateTaskResponse.fromJson(json.decode(response.body));
+//       if (response.statusCode == 201) {
+//         final taskResponse =
+//             CreateTaskResponse.fromJson(json.decode(response.body));
 
-        if (taskResponse.status == 'success') {
-          createdTask.value = taskResponse.data;
-          await getTasks();
-          return true;
-        } else {
-          errorMessageCreate.value = taskResponse.message;
-          return false;
-        }
-      } else {
-        return _handleErrorResponse(response);
-      }
-    } on http.ClientException catch (e) {
-      // Network connection error
-      errorMessageCreate.value = 'Network error: Please check your connection';
-      developer.log('Network error: $e', name: 'TaskController');
-      return false;
-    } on FormatException catch (e) {
-      // JSON parsing error
-      errorMessageCreate.value = 'Invalid response format';
-      developer.log('JSON parsing error: $e', name: 'TaskController');
-      return false;
-    } on TimeoutException catch (e) {
-      // Request timeout
-      errorMessageCreate.value = 'Request timeout. Please try again';
-      developer.log('Timeout error: $e', name: 'TaskController');
-      return false;
-    } catch (e) {
-      // Other unexpected errors
-      errorMessageCreate.value = 'An unexpected error occurred';
-      developer.log('Unexpected error: $e', name: 'TaskController');
-      return false;
-    } finally {
-      isLoadingCreate.value = false;
+//         if (taskResponse.status == 'success') {
+//           createdTask.value = taskResponse.data;
+//           await getTasks();
+//           return true;
+//         } else {
+//           errorMessageCreate.value = taskResponse.message;
+//           return false;
+//         }
+//       } else {
+//         return _handleErrorResponse(response);
+//       }
+//     } on http.ClientException catch (e) {
+//       // Network connection error
+//       errorMessageCreate.value = 'Network error: Please check your connection';
+//       developer.log('Network error: $e', name: 'TaskController');
+//       return false;
+//     } on FormatException catch (e) {
+//       // JSON parsing error
+//       errorMessageCreate.value = 'Invalid response format';
+//       developer.log('JSON parsing error: $e', name: 'TaskController');
+//       return false;
+//     } on TimeoutException catch (e) {
+//       // Request timeout
+//       errorMessageCreate.value = 'Request timeout. Please try again';
+//       developer.log('Timeout error: $e', name: 'TaskController');
+//       return false;
+//     } catch (e) {
+//       // Other unexpected errors
+//       errorMessageCreate.value = 'An unexpected error occurred';
+//       developer.log('Unexpected error: $e', name: 'TaskController');
+//       return false;
+//     } finally {
+//       isLoadingCreate.value = false;
+//     }
+//   }
+
+  void _setLoadingState(TaskStatus status, bool loading) {
+    switch (status) {
+      case TaskStatus.todo:
+        isTodoLoading.value = loading;
+        break;
+      case TaskStatus.inProgress:
+        isInProgressLoading.value = loading;
+        break;
+      case TaskStatus.completed:
+        isCompletedLoading.value = loading;
+        break;
+      case TaskStatus.blocked:
+        isBlockedLoading.value = loading;
+        break;
+      case TaskStatus.cancelled:
+        throw UnimplementedError();
+      case TaskStatus.overdue:
+        throw UnimplementedError();
+      case TaskStatus.onReview:
+        throw UnimplementedError();
+      case TaskStatus.onHold:
+        throw UnimplementedError();
+    }
+  }
+
+  void _setErrorMessage(TaskStatus status, String message) {
+    switch (status) {
+      case TaskStatus.todo:
+        todoError.value = message;
+        break;
+      case TaskStatus.inProgress:
+        inProgressError.value = message;
+        break;
+      case TaskStatus.completed:
+        completedError.value = message;
+        break;
+      case TaskStatus.blocked:
+        blockedError.value = message;
+        break;
+      case TaskStatus.cancelled:
+        throw UnimplementedError();
+      case TaskStatus.overdue:
+        throw UnimplementedError();
+      case TaskStatus.onReview:
+        throw UnimplementedError();
+      case TaskStatus.onHold:
+        throw UnimplementedError();
+    }
+  }
+
+  void _updateTasksByStatus(TaskStatus status, List<TaskListModel> tasks) {
+    switch (status) {
+      case TaskStatus.todo:
+        todoTasks.assignAll(tasks);
+        break;
+      case TaskStatus.inProgress:
+        inProgressTasks.assignAll(tasks);
+        break;
+      case TaskStatus.completed:
+        completedTasks.assignAll(tasks);
+        break;
+      case TaskStatus.blocked:
+        blockedTasks.assignAll(tasks);
+        break;
+      case TaskStatus.cancelled:
+        throw UnimplementedError();
+      case TaskStatus.overdue:
+        throw UnimplementedError();
+      case TaskStatus.onReview:
+        throw UnimplementedError();
+      case TaskStatus.onHold:
+        throw UnimplementedError();
+    }
+  }
+
+  void _updatePaginationByStatus(TaskStatus status, Pagination pagination) {
+    switch (status) {
+      case TaskStatus.todo:
+        todoPagination.value = pagination;
+        break;
+      case TaskStatus.inProgress:
+        inProgressPagination.value = pagination;
+        break;
+      case TaskStatus.completed:
+        completedPagination.value = pagination;
+        break;
+      case TaskStatus.blocked:
+        blockedPagination.value = pagination;
+        break;
+      case TaskStatus.cancelled:
+        throw UnimplementedError();
+      case TaskStatus.overdue:
+        throw UnimplementedError();
+      case TaskStatus.onReview:
+        throw UnimplementedError();
+      case TaskStatus.onHold:
+        throw UnimplementedError();
     }
   }
 

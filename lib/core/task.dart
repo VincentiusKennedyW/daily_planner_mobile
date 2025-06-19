@@ -30,25 +30,25 @@ extension TaskCategoryExtension on TaskCategory {
   String get name {
     switch (this) {
       case TaskCategory.riset:
-        return 'Riset';
+        return 'RISET';
       case TaskCategory.boq:
-        return 'BoQ';
+        return 'BOQ';
       case TaskCategory.development:
-        return 'Development';
+        return 'DEVELOPMENT';
       case TaskCategory.implementation:
-        return 'Implementation';
+        return 'IMPLEMENTATION';
       case TaskCategory.maintenance:
-        return 'Maintenance';
+        return 'MAINTENANCE';
       case TaskCategory.assembly:
-        return 'Assembly';
+        return 'ASSEMBLY';
       case TaskCategory.systemDocumentation:
-        return 'System Documentation';
+        return 'SYSTEM_DOCUMENTATION';
       case TaskCategory.optimationServer:
-        return 'Optimation Server';
+        return 'OPTIMATION_SERVER';
       case TaskCategory.deploymentServer:
-        return 'Deployment Server';
+        return 'DEPLOYMENT_SERVER';
       case TaskCategory.troubleshootServer:
-        return 'Troubleshoot Server';
+        return 'TROUBLESHOOT_SERVER';
     }
   }
 
@@ -132,13 +132,13 @@ extension TaskPriorityExtension on TaskPriority {
   String get name {
     switch (this) {
       case TaskPriority.low:
-        return 'Rendah';
+        return 'RENDAH';
       case TaskPriority.medium:
-        return 'Sedang';
+        return 'SEDANG';
       case TaskPriority.high:
-        return 'Tinggi';
+        return 'TINGGI';
       case TaskPriority.urgent:
-        return 'Urgent';
+        return 'URGENT';
     }
   }
 
@@ -160,21 +160,21 @@ extension TaskStatusExtension on TaskStatus {
   String get name {
     switch (this) {
       case TaskStatus.todo:
-        return 'To Do';
+        return 'TODO';
       case TaskStatus.inProgress:
-        return 'In Progress';
+        return 'IN_PROGRESS';
       case TaskStatus.completed:
-        return 'Completed';
+        return 'COMPLETED';
       case TaskStatus.cancelled:
-        return 'Cancelled';
+        return 'CANCELLED';
       case TaskStatus.overdue:
-        return 'Overdue';
+        return 'OVERDUE';
       case TaskStatus.onReview:
-        return 'On Review';
+        return 'ON_REVIEW';
       case TaskStatus.onHold:
-        return 'On Hold';
+        return 'ON_HOLD';
       case TaskStatus.blocked:
-        return 'Blocked';
+        return 'BLOCKED';
     }
   }
 

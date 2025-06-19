@@ -1,6 +1,5 @@
 import 'package:expense_tracker/app/modules/daily_planner/controllers/task_controller.dart';
 import 'package:expense_tracker/app/data/models/task_models/task_model.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/task_detail_sheet.dart';
 import 'package:expense_tracker/core/task.dart';
 import 'package:expense_tracker/main.dart';
 import 'package:flutter/material.dart';
@@ -43,42 +42,89 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
           tabs: [
             Obx(() => Tab(
                 text:
-                    'To Do (${taskController.tasks.where((t) => t.status == TaskStatus.todo).length})')),
+                    'To Do (${taskController.todoTasks.where((t) => t.status == TaskStatus.todo).length})')),
             Obx(() => Tab(
                 text:
-                    'Progress (${taskController.tasks.where((t) => t.status == TaskStatus.inProgress).length})')),
+                    'Progress (${taskController.inProgressTasks.where((t) => t.status == TaskStatus.inProgress).length})')),
             Obx(() => Tab(
                 text:
-                    'Done (${taskController.tasks.where((t) => t.status == TaskStatus.completed).length})')),
+                    'Done (${taskController.completedTasks.where((t) => t.status == TaskStatus.completed).length})')),
             Obx(() => Tab(
                 text:
-                    'Blocked (${taskController.tasks.where((t) => t.status == TaskStatus.blocked).length})')),
+                    'Blocked (${taskController.blockedTasks.where((t) => t.status == TaskStatus.blocked).length})')),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          Obx(
-            () => _buildTaskList(taskController.tasks
-                .where((task) => task.status == TaskStatus.todo)
-                .toList()),
-          ),
-          Obx(() => _buildTaskList(taskController.tasks
-              .where((task) => task.status == TaskStatus.inProgress)
-              .toList())),
-          Obx(() => _buildTaskList(taskController.tasks
-              .where((task) => task.status == TaskStatus.completed)
-              .toList())),
-          Obx(() => _buildTaskList(taskController.tasks
-              .where((task) => task.status == TaskStatus.blocked)
-              .toList())),
+          Obx(() => _buildTaskList(
+                taskController.todoTasks,
+                taskController.isTodoLoading.value,
+                taskController.todoError.value,
+                () => taskController.refreshTab(TaskStatus.todo),
+              )),
+
+          // In Progress Tab
+          Obx(() => _buildTaskList(
+                taskController.inProgressTasks,
+                taskController.isInProgressLoading.value,
+                taskController.inProgressError.value,
+                () => taskController.refreshTab(TaskStatus.inProgress),
+              )),
+
+          // Completed Tab
+          Obx(() => _buildTaskList(
+                taskController.completedTasks,
+                taskController.isCompletedLoading.value,
+                taskController.completedError.value,
+                () => taskController.refreshTab(TaskStatus.completed),
+              )),
+
+          // Blocked Tab
+          Obx(() => _buildTaskList(
+                taskController.blockedTasks,
+                taskController.isBlockedLoading.value,
+                taskController.blockedError.value,
+                () => taskController.refreshTab(TaskStatus.blocked),
+              )),
         ],
       ),
     );
   }
 
-  Widget _buildTaskList(List<TaskListModel> tasks) {
+  Widget _buildTaskList(
+    List<TaskListModel> tasks,
+    bool isLoading,
+    String errorMessage,
+    VoidCallback onRefresh,
+  ) {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    if (errorMessage.isNotEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
+            SizedBox(height: 16),
+            Text(
+              'Error: $errorMessage',
+              style: TextStyle(color: Colors.red[600]),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: onRefresh,
+              child: Text('Coba Lagi'),
+            ),
+          ],
+        ),
+      );
+    }
+
     if (tasks.isEmpty) {
       return Center(
         child: Column(
@@ -111,13 +157,15 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
       );
     }
 
-    // return Text("OK"); // Placeholder for the task list widget
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: tasks.length,
-      itemBuilder: (context, index) {
-        return _buildTaskCard(tasks[index]);
-      },
+    return RefreshIndicator(
+      onRefresh: () async => onRefresh(),
+      child: ListView.builder(
+        padding: EdgeInsets.all(16),
+        itemCount: tasks.length,
+        itemBuilder: (context, index) {
+          return _buildTaskCard(tasks[index]);
+        },
+      ),
     );
   }
 
@@ -317,7 +365,6 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
                   ],
                 ),
               ),
-
               if (task.status != TaskStatus.completed) ...[
                 SizedBox(height: 16),
                 Row(

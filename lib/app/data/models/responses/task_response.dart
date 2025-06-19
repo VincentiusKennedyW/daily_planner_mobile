@@ -3,19 +3,20 @@ import 'package:expense_tracker/app/data/models/task_models/task_model.dart';
 class GetAllTasksResponse {
   final String status;
   final String message;
-  final GetAllTasksData data;
+  final GetAllTasksData? data;
 
   GetAllTasksResponse({
     required this.status,
     required this.message,
-    required this.data,
+    this.data,
   });
 
   factory GetAllTasksResponse.fromJson(Map<String, dynamic> json) {
     return GetAllTasksResponse(
       status: json['status'],
       message: json['message'],
-      data: GetAllTasksData.fromJson(json['data']),
+      data:
+          json['data'] != null ? GetAllTasksData.fromJson(json['data']) : null,
     );
   }
 
@@ -23,7 +24,7 @@ class GetAllTasksResponse {
     return {
       'status': status,
       'message': message,
-      'data': data.toJson(),
+      'data': data?.toJson(),
     };
   }
 }
