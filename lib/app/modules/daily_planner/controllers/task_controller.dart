@@ -29,6 +29,12 @@ class TaskController extends GetxController {
   final RxBool isInProgressLoading = false.obs;
   final RxBool isCompletedLoading = false.obs;
   final RxBool isBlockedLoading = false.obs;
+
+  final RxBool isTodoPaginationLoading = false.obs;
+  final RxBool isInProgressPaginationLoading = false.obs;
+  final RxBool isCompletedPaginationLoading = false.obs;
+  final RxBool isBlockedPaginationLoading = false.obs;
+
   final RxBool isLoadingCreate = false.obs;
 
   final RxString todoError = ''.obs;
@@ -56,11 +62,19 @@ class TaskController extends GetxController {
     ]);
   }
 
-  Future<void> getTasksByStatus(TaskStatus status,
-      {int page = 1, int limit = 10}) async {
+  Future<void> getTasksByStatus(
+    TaskStatus status, {
+    int page = 1,
+    int limit = 10,
+    bool isLoadMore = false,
+  }) async {
     try {
-      _setLoadingState(status, true);
-      _setErrorMessage(status, '');
+      if (isLoadMore) {
+        _setLoadingMoreState(status, true);
+      } else {
+        _setLoadingState(status, true);
+        _setErrorMessage(status, '');
+      }
 
       final url =
           '$baseUrl/tasks?page=$page&limit=$limit&status=${status.name}';
@@ -77,7 +91,11 @@ class TaskController extends GetxController {
             GetAllTasksResponse.fromJson(json.decode(response.body));
 
         if (taskResponse.status == 'success') {
-          _updateTasksByStatus(status, taskResponse.data?.tasks ?? []);
+          if (isLoadMore) {
+            _appendTasksByStatus(status, taskResponse.data?.tasks ?? []);
+          } else {
+            _updateTasksByStatus(status, taskResponse.data?.tasks ?? []);
+          }
           _updatePaginationByStatus(
               status, taskResponse.data?.pagination ?? Pagination());
         } else {
@@ -89,8 +107,20 @@ class TaskController extends GetxController {
     } catch (e) {
       _setErrorMessage(status, 'Failed to load tasks: $e');
     } finally {
-      _setLoadingState(status, false);
+      if (isLoadMore) {
+        _setLoadingMoreState(status, false);
+      } else {
+        _setLoadingState(status, false);
+      }
     }
+  }
+
+  Future<void> loadMoreTaskByStatus(TaskStatus status) async {
+    final pagination = _getPaginationByStatus(status);
+    if (pagination == null || !_hasNextPage(pagination)) return;
+
+    final nextPage = (pagination.page ?? 0) + 1;
+    await getTasksByStatus(status, page: nextPage, isLoadMore: true);
   }
 
   // Method untuk refresh tab tertentu
@@ -310,6 +340,31 @@ class TaskController extends GetxController {
     }
   }
 
+  void _setLoadingMoreState(TaskStatus status, bool loading) {
+    switch (status) {
+      case TaskStatus.todo:
+        isTodoPaginationLoading.value = loading;
+        break;
+      case TaskStatus.inProgress:
+        isInProgressPaginationLoading.value = loading;
+        break;
+      case TaskStatus.completed:
+        isCompletedPaginationLoading.value = loading;
+        break;
+      case TaskStatus.blocked:
+        isBlockedPaginationLoading.value = loading;
+        break;
+      case TaskStatus.cancelled:
+        throw UnimplementedError();
+      case TaskStatus.overdue:
+        throw UnimplementedError();
+      case TaskStatus.onReview:
+        throw UnimplementedError();
+      case TaskStatus.onHold:
+        throw UnimplementedError();
+    }
+  }
+
   void _setErrorMessage(TaskStatus status, String message) {
     switch (status) {
       case TaskStatus.todo:
@@ -360,6 +415,31 @@ class TaskController extends GetxController {
     }
   }
 
+  void _appendTasksByStatus(TaskStatus status, List<TaskListModel> newTasks) {
+    switch (status) {
+      case TaskStatus.todo:
+        todoTasks.addAll(newTasks);
+        break;
+      case TaskStatus.inProgress:
+        inProgressTasks.addAll(newTasks);
+        break;
+      case TaskStatus.completed:
+        completedTasks.addAll(newTasks);
+        break;
+      case TaskStatus.blocked:
+        blockedTasks.addAll(newTasks);
+        break;
+      case TaskStatus.cancelled:
+        throw UnimplementedError();
+      case TaskStatus.overdue:
+        throw UnimplementedError();
+      case TaskStatus.onReview:
+        throw UnimplementedError();
+      case TaskStatus.onHold:
+        throw UnimplementedError();
+    }
+  }
+
   void _updatePaginationByStatus(TaskStatus status, Pagination pagination) {
     switch (status) {
       case TaskStatus.todo:
@@ -383,6 +463,89 @@ class TaskController extends GetxController {
       case TaskStatus.onHold:
         throw UnimplementedError();
     }
+  }
+
+  Pagination? _getPaginationByStatus(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.todo:
+        return todoPagination.value;
+      case TaskStatus.inProgress:
+        return inProgressPagination.value;
+      case TaskStatus.completed:
+        return completedPagination.value;
+      case TaskStatus.blocked:
+        return blockedPagination.value;
+      case TaskStatus.cancelled:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case TaskStatus.overdue:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case TaskStatus.onReview:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case TaskStatus.onHold:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+    }
+  }
+
+  bool _getLoadingMoreState(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.todo:
+        return isTodoPaginationLoading.value;
+      case TaskStatus.inProgress:
+        return isInProgressLoading.value;
+      case TaskStatus.completed:
+        return isCompletedLoading.value;
+      case TaskStatus.blocked:
+        return isBlockedLoading.value;
+      case TaskStatus.cancelled:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case TaskStatus.overdue:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case TaskStatus.onReview:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case TaskStatus.onHold:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+    }
+  }
+
+  bool _hasNextPage(Pagination pagination) {
+    return (pagination.page ?? 0) < (pagination.totalPages ?? 0);
+  }
+
+  // Getter untuk mengecek apakah masih bisa load more
+  bool canLoadMoreTodo() {
+    final pagination = todoPagination.value;
+    return pagination != null &&
+        _hasNextPage(pagination) &&
+        !isTodoPaginationLoading.value;
+  }
+
+  bool canLoadMoreInProgress() {
+    final pagination = inProgressPagination.value;
+    return pagination != null &&
+        _hasNextPage(pagination) &&
+        !isInProgressPaginationLoading.value;
+  }
+
+  bool canLoadMoreCompleted() {
+    final pagination = completedPagination.value;
+    return pagination != null &&
+        _hasNextPage(pagination) &&
+        !isCompletedPaginationLoading.value;
+  }
+
+  bool canLoadMoreBlocked() {
+    final pagination = blockedPagination.value;
+    return pagination != null &&
+        _hasNextPage(pagination) &&
+        !isBlockedPaginationLoading.value;
   }
 
 // Helper method untuk handle common HTTP status codes
@@ -501,5 +664,4 @@ class TaskController extends GetxController {
   // int get totalTasks {
   //   return pagination.value?.total ?? 0;
   // }
-
 }

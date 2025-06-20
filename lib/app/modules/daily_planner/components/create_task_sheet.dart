@@ -797,7 +797,6 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
                     return SizedBox.shrink();
                   }),
 
-// Error message dengan better styling
                   Obx(() => searchController.errorMessage.value.isNotEmpty
                       ? Container(
                           width: double.infinity,
@@ -957,7 +956,6 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
                     ],
                   ),
                   SizedBox(height: 16),
-
                   _buildSectionTitle('Tags'),
                   Row(
                     children: [
@@ -1193,29 +1191,6 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
     );
     if (date != null) {
       setState(() => _dueDate = date);
-    }
-  }
-
-  void _selectDueTime() async {
-    final time = await showTimePicker(
-      context: context,
-      initialTime: _dueTime,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Color(0xFF6366F1),
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (time != null) {
-      setState(() => _dueTime = time);
     }
   }
 
