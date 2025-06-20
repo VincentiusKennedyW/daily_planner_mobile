@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as developer;
 
@@ -20,6 +21,7 @@ class SearchUserController extends GetxController {
 
   final GetStorage _storage = GetStorage();
   final String baseUrl = Config.url;
+  Timer? _debounce;
 
   Map<String, String> get _headers {
     final headers = <String, String>{
@@ -36,11 +38,12 @@ class SearchUserController extends GetxController {
     return headers;
   }
 
-  void debounceSearch(String searchKeyword, {int delay = 1000}) {
-    // Debounce the search to avoid too many requests
-    Future.delayed(Duration(milliseconds: delay), () {
-      if (searchKeyword.isNotEmpty) {
-        searchUsers(searchKeyword);
+  void debounceSearch(String keyword, {int delay = 500}) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+
+    _debounce = Timer(Duration(milliseconds: delay), () {
+      if (keyword.isNotEmpty) {
+        searchUsers(keyword);
       } else {
         clearSearch();
       }
@@ -55,7 +58,6 @@ class SearchUserController extends GetxController {
       errorMessage.value = '';
       keyword.value = searchKeyword;
 
-      // If it's a new search (page 1), clear existing data
       if (page == 1) {
         users.clear();
         currentPage.value = 1;

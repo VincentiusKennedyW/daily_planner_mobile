@@ -178,6 +178,13 @@ class TaskController extends GetxController {
                     creator: taskResponse.data.creator,
                   ));
 
+              if (todoPagination.value != null) {
+                todoPagination.value = Pagination(
+                  page: todoPagination.value!.page,
+                  totalPages: todoPagination.value!.totalPages,
+                  total: (todoPagination.value!.total ?? 0) + 1,
+                );
+              }
               break;
             default:
               break;
