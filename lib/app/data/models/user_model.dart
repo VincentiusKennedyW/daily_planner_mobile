@@ -2,7 +2,7 @@ class UserModel {
   final int? id;
   final String? name;
   final String? email;
-  final String? password;
+  // final String? password;
   final String? nip;
   final String? nik;
   final String? phone;
@@ -11,7 +11,7 @@ class UserModel {
     this.id,
     this.name,
     this.email,
-    this.password,
+    // this.password,
     this.nip,
     this.nik,
     this.phone,
@@ -22,7 +22,7 @@ class UserModel {
       id: json['id'],
       name: json['name'],
       email: json['email'],
-      password: json['password'],
+      // password: json['password'],
       nip: json['nip'],
       nik: json['nik'],
       phone: json['phone'],
@@ -34,7 +34,7 @@ class UserModel {
       'id': id,
       'name': name,
       'email': email,
-      'password': password,
+      // 'password': password,
       'nip': nip,
       'nik': nik,
       'phone': phone,
@@ -54,7 +54,7 @@ class UserModel {
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
-      password: password ?? this.password,
+      // password: password ?? this.password,
       nip: nip ?? this.nip,
       nik: nik ?? this.nik,
       phone: phone ?? this.phone,
@@ -62,17 +62,17 @@ class UserModel {
   }
 }
 
-class UserResponse {
+class UserWithName {
   final int id;
   final String name;
 
-  UserResponse({
+  UserWithName({
     required this.id,
     required this.name,
   });
 
-  factory UserResponse.fromJson(Map<String, dynamic> json) {
-    return UserResponse(
+  factory UserWithName.fromJson(Map<String, dynamic> json) {
+    return UserWithName(
       id: json['id'],
       name: json['name'],
     );
@@ -86,19 +86,19 @@ class UserResponse {
   }
 }
 
-class User {
+class UserWithEmail {
   final int id;
   final String name;
   final String email;
 
-  User({
+  UserWithEmail({
     required this.id,
     required this.name,
     required this.email,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
+  factory UserWithEmail.fromJson(Map<String, dynamic> json) {
+    return UserWithEmail(
       id: json['id'],
       name: json['name'],
       email: json['email'],

@@ -365,45 +365,49 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
                   ],
                 ),
               ),
-              if (task.status != TaskStatus.completed) ...[
+              if (task.status == TaskStatus.todo) ...[
                 SizedBox(height: 16),
                 Row(
                   children: [
-                    // Expanded(
-                    //   child: ElevatedButton.icon(
-                    //     onPressed: () =>
-                    //         _updateTaskStatus(task, TaskStatus.inProgress),
-                    //     icon: Icon(Icons.play_arrow_rounded, size: 16),
-                    //     label: Text('Mulai', style: TextStyle(fontSize: 12)),
-                    //     style: ElevatedButton.styleFrom(
-                    //       backgroundColor: Colors.blue.withOpacity(0.1),
-                    //       foregroundColor: Colors.blue,
-                    //       elevation: 0,
-                    //       padding: EdgeInsets.symmetric(vertical: 8),
-                    //       shape: RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.circular(8),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    SizedBox(width: 8),
-                    // Expanded(
-                    //   child: ElevatedButton.icon(
-                    //     onPressed: () =>
-                    //         _updateTaskStatus(task, TaskStatus.completed),
-                    //     icon: Icon(Icons.check_rounded, size: 16),
-                    //     label: Text('Selesai', style: TextStyle(fontSize: 12)),
-                    //     style: ElevatedButton.styleFrom(
-                    //       backgroundColor: Colors.green.withOpacity(0.1),
-                    //       foregroundColor: Colors.green,
-                    //       elevation: 0,
-                    //       padding: EdgeInsets.symmetric(vertical: 8),
-                    //       shape: RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.circular(8),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: Icon(Icons.play_arrow_rounded, size: 16),
+                        label: Text('Mulai', style: TextStyle(fontSize: 12)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue.withOpacity(0.1),
+                          foregroundColor: Colors.blue,
+                          elevation: 0,
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              if (task.status == TaskStatus.inProgress) ...[
+                SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: Icon(Icons.check_rounded, size: 16),
+                        label: Text('Selesai', style: TextStyle(fontSize: 12)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green.withOpacity(0.1),
+                          foregroundColor: Colors.green,
+                          elevation: 0,
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ],

@@ -31,7 +31,7 @@ class TaskAssigneeResponse {
 }
 
 class TaskAssigneeData {
-  final User user;
+  final UserWithEmail user;
   final int total;
   final int completed;
   final int inProgress;
@@ -57,7 +57,7 @@ class TaskAssigneeData {
 
   factory TaskAssigneeData.fromJson(Map<String, dynamic> json) {
     return TaskAssigneeData(
-      user: User.fromJson(json['user']),
+      user: UserWithEmail.fromJson(json['user']),
       total: json['total'],
       completed: json['completed'],
       inProgress: json['inProgress'],

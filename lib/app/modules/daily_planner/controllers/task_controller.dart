@@ -501,4 +501,5 @@ class TaskController extends GetxController {
   // int get totalTasks {
   //   return pagination.value?.total ?? 0;
   // }
+
 }

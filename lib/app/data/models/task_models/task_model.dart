@@ -12,13 +12,13 @@ class TaskListModel {
   final int point;
   final TaskPriority priority;
   late final TaskStatus status;
-  final List<UserResponse>? assignees;
+  final List<UserWithName>? assignees;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? dueDate;
   final List<String>? tags;
   final int? estimatedHours;
-  final UserResponse creator;
+  final UserWithName creator;
   final List<Comment>? comments;
 
   TaskListModel({
@@ -50,7 +50,7 @@ class TaskListModel {
       status: TaskModelHelper.parseTaskStatus(json['status']),
       assignees: json['assignees'] != null
           ? (json['assignees'] as List)
-              .map((assignee) => UserResponse.fromJson(assignee))
+              .map((assignee) => UserWithName.fromJson(assignee))
               .toList()
           : null,
       createdAt: DateTime.parse(json['createdAt']),
@@ -58,7 +58,7 @@ class TaskListModel {
       dueDate: json['dueDate'] != null ? DateTime.parse(json['dueDate']) : null,
       tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
       estimatedHours: json['estimatedHours'],
-      creator: UserResponse.fromJson(json['creator']),
+      creator: UserWithName.fromJson(json['creator']),
       comments: json['comments'] != null
           ? (json['comments'] as List)
               .map((comment) => Comment.fromJson(comment))

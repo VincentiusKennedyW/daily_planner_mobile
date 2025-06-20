@@ -2,7 +2,7 @@ import 'package:expense_tracker/app/data/models/user_model.dart';
 
 class Comment {
   final int id;
-  final UserResponse user;
+  final UserWithName user;
   final String content;
   final DateTime createdAt;
 
@@ -16,7 +16,7 @@ class Comment {
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
       id: json['id'],
-      user: UserResponse.fromJson(json['user']),
+      user: UserWithName.fromJson(json['user']),
       content: json['content'],
       createdAt: DateTime.parse(json['createdAt']),
     );

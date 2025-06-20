@@ -9,11 +9,11 @@ class ModernCurvedBottomNav extends StatefulWidget {
   final List<BottomNavItem> items;
 
   const ModernCurvedBottomNav({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.onTap,
     required this.items,
-  }) : super(key: key);
+  });
 
   @override
   _ModernCurvedBottomNavState createState() => _ModernCurvedBottomNavState();
@@ -22,7 +22,6 @@ class ModernCurvedBottomNav extends StatefulWidget {
 class _ModernCurvedBottomNavState extends State<ModernCurvedBottomNav>
     with TickerProviderStateMixin {
   late AnimationController _animationController;
-  late Animation<double> _animation;
 
   @override
   void initState() {
@@ -30,10 +29,6 @@ class _ModernCurvedBottomNavState extends State<ModernCurvedBottomNav>
     _animationController = AnimationController(
       duration: Duration(milliseconds: 300),
       vsync: this,
-    );
-    _animation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.elasticOut,
     );
     _animationController.forward();
   }
@@ -144,11 +139,11 @@ class FloatingBubbleBottomNav extends StatelessWidget {
   final List<BottomNavItem> items;
 
   const FloatingBubbleBottomNav({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.onTap,
     required this.items,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -233,11 +228,11 @@ class NeumorphicBottomNav extends StatelessWidget {
   final List<BottomNavItem> items;
 
   const NeumorphicBottomNav({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.onTap,
     required this.items,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -327,11 +322,11 @@ class MinimalDotsBottomNav extends StatelessWidget {
   final List<BottomNavItem> items;
 
   const MinimalDotsBottomNav({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.onTap,
     required this.items,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -391,11 +386,11 @@ class GlassmorphismBottomNav extends StatelessWidget {
   final List<BottomNavItem> items;
 
   const GlassmorphismBottomNav({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.onTap,
     required this.items,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -20,11 +20,11 @@ class GetAllTasksResponse {
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'status': status,
-      'message': message,
-      'data': data?.toJson(),
-    };
-  }
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     'status': status,
+  //     'message': message,
+  //     'data': data?.toJson(),
+  //   };
+  // }
 }
