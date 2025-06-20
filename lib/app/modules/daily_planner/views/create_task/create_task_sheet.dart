@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/modules/daily_planner/controllers/create_task_controller.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/create_task/widgets/assignee_search_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,7 +27,7 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  final TaskController taskController = Get.find<TaskController>();
+  final CreateTaskController createTaskController = Get.find<CreateTaskController>();
   final SearchUserController searchController = Get.put(SearchUserController());
 
   TaskCategory _selectedCategory = TaskCategory.development;
@@ -94,7 +95,7 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
             ),
           ),
           Obx(() => BottomActionSection(
-                isLoading: taskController.isLoadingCreate.value,
+                isLoading: createTaskController.isLoadingCreate.value,
                 onCancel: () {
                   Get.back();
                   _clearSearchData();
@@ -141,13 +142,13 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
       point: _selectedCategory.points,
     );
 
-    final success = await taskController.createTask(newTask);
+    final success = await createTaskController.createTask(newTask);
     if (success) {
       Get.back(result: true);
       _clearSearchData();
       Get.snackbar('Sukses', 'Task berhasil dibuat');
     } else {
-      Get.snackbar('Error', taskController.errorMessageCreate.value);
+      Get.snackbar('Error', createTaskController.errorMessageCreate.value);
     }
   }
 }

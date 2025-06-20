@@ -1,25 +1,25 @@
-import 'package:expense_tracker/app/modules/daily_planner/controllers/task_controller.dart';
+import 'package:expense_tracker/app/modules/daily_planner/controllers/get_task_controller.dart';
 import 'package:expense_tracker/core/task.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 Widget buildBottomLoader(bool isLoadingMore, TaskStatus status) {
-  final taskController = Get.find<TaskController>();
+  final getTaskController = Get.find<GetTaskController>();
+
   if (!isLoadingMore) {
-    // Cek apakah masih ada halaman selanjutnya
     bool hasMore = false;
     switch (status) {
       case TaskStatus.todo:
-        hasMore = taskController.canLoadMoreTodo();
+        hasMore = getTaskController.canLoadMoreTodo();
         break;
       case TaskStatus.inProgress:
-        hasMore = taskController.canLoadMoreInProgress();
+        hasMore = getTaskController.canLoadMoreInProgress();
         break;
       case TaskStatus.completed:
-        hasMore = taskController.canLoadMoreCompleted();
+        hasMore = getTaskController.canLoadMoreCompleted();
         break;
       case TaskStatus.blocked:
-        hasMore = taskController.canLoadMoreBlocked();
+        hasMore = getTaskController.canLoadMoreBlocked();
         break;
       case TaskStatus.cancelled:
         throw UnimplementedError();

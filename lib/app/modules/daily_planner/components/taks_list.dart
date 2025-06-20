@@ -84,12 +84,11 @@ Widget buildTaskList(
           child: ListView.builder(
             controller: scrollController,
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            itemCount: tasks.length + 1, // +1 untuk loading indicator
+            itemCount: tasks.length + 1,
             itemBuilder: (context, index) {
               if (index < tasks.length) {
                 return buildTaskCard(tasks[index]);
               } else {
-                // Loading indicator di bagian bawah
                 return buildBottomLoader(isLoadMore, status);
               }
             },

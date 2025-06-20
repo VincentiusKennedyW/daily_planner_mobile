@@ -187,7 +187,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               ),
             )
           : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
     );
   }
 

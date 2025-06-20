@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/modules/daily_planner/controllers/get_task_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/get_instance.dart';
@@ -5,7 +6,6 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 
 import 'package:expense_tracker/app/data/models/pagination_model.dart';
 import 'package:expense_tracker/app/modules/daily_planner/components/taks_list.dart';
-import 'package:expense_tracker/app/modules/daily_planner/controllers/task_controller.dart';
 import 'package:expense_tracker/core/task.dart';
 import 'package:expense_tracker/main.dart';
 
@@ -20,7 +20,7 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
 
-  final TaskController taskController = Get.find<TaskController>();
+  final GetTaskController getTaskController = Get.find<GetTaskController>();
 
   final ScrollController _todoScrollController = ScrollController();
   final ScrollController _inProgressScrollController = ScrollController();
@@ -39,8 +39,8 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
     _todoScrollController.addListener(() {
       if (_todoScrollController.position.pixels >=
           _todoScrollController.position.maxScrollExtent - 100) {
-        if (taskController.canLoadMoreTodo()) {
-          taskController.loadMoreTaskByStatus(TaskStatus.todo);
+        if (getTaskController.canLoadMoreTodo()) {
+          getTaskController.loadMoreTaskByStatus(TaskStatus.todo);
         }
       }
     });
@@ -48,8 +48,8 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
     _inProgressScrollController.addListener(() {
       if (_inProgressScrollController.position.pixels >=
           _inProgressScrollController.position.maxScrollExtent - 100) {
-        if (taskController.canLoadMoreInProgress()) {
-          taskController.loadMoreTaskByStatus(TaskStatus.inProgress);
+        if (getTaskController.canLoadMoreInProgress()) {
+          getTaskController.loadMoreTaskByStatus(TaskStatus.inProgress);
         }
       }
     });
@@ -57,8 +57,8 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
     _completedScrollController.addListener(() {
       if (_completedScrollController.position.pixels >=
           _completedScrollController.position.maxScrollExtent - 100) {
-        if (taskController.canLoadMoreCompleted()) {
-          taskController.loadMoreTaskByStatus(TaskStatus.completed);
+        if (getTaskController.canLoadMoreCompleted()) {
+          getTaskController.loadMoreTaskByStatus(TaskStatus.completed);
         }
       }
     });
@@ -66,8 +66,8 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
     _blockedScrollController.addListener(() {
       if (_blockedScrollController.position.pixels >=
           _blockedScrollController.position.maxScrollExtent - 100) {
-        if (taskController.canLoadMoreBlocked()) {
-          taskController.loadMoreTaskByStatus(TaskStatus.blocked);
+        if (getTaskController.canLoadMoreBlocked()) {
+          getTaskController.loadMoreTaskByStatus(TaskStatus.blocked);
         }
       }
     });
@@ -116,38 +116,38 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
         controller: _tabController,
         children: [
           Obx(() => buildTaskList(
-                taskController.todoTasks,
-                taskController.isTodoLoading.value,
-                taskController.isTodoPaginationLoading.value,
-                taskController.todoError.value,
-                () => taskController.refreshTab(TaskStatus.todo),
+                getTaskController.todoTasks,
+                getTaskController.isTodoLoading.value,
+                getTaskController.isTodoPaginationLoading.value,
+                getTaskController.todoError.value,
+                () => getTaskController.refreshTab(TaskStatus.todo),
                 _todoScrollController,
                 TaskStatus.todo,
               )),
           Obx(() => buildTaskList(
-                taskController.inProgressTasks,
-                taskController.isInProgressLoading.value,
-                taskController.isInProgressPaginationLoading.value,
-                taskController.inProgressError.value,
-                () => taskController.refreshTab(TaskStatus.inProgress),
+                getTaskController.inProgressTasks,
+                getTaskController.isInProgressLoading.value,
+                getTaskController.isInProgressPaginationLoading.value,
+                getTaskController.inProgressError.value,
+                () => getTaskController.refreshTab(TaskStatus.inProgress),
                 _inProgressScrollController,
                 TaskStatus.inProgress,
               )),
           Obx(() => buildTaskList(
-                taskController.completedTasks,
-                taskController.isCompletedLoading.value,
-                taskController.isCompletedPaginationLoading.value,
-                taskController.completedError.value,
-                () => taskController.refreshTab(TaskStatus.completed),
+                getTaskController.completedTasks,
+                getTaskController.isCompletedLoading.value,
+                getTaskController.isCompletedPaginationLoading.value,
+                getTaskController.completedError.value,
+                () => getTaskController.refreshTab(TaskStatus.completed),
                 _completedScrollController,
                 TaskStatus.completed,
               )),
           Obx(() => buildTaskList(
-                taskController.blockedTasks,
-                taskController.isBlockedLoading.value,
-                taskController.isBlockedPaginationLoading.value,
-                taskController.blockedError.value,
-                () => taskController.refreshTab(TaskStatus.blocked),
+                getTaskController.blockedTasks,
+                getTaskController.isBlockedLoading.value,
+                getTaskController.isBlockedPaginationLoading.value,
+                getTaskController.blockedError.value,
+                () => getTaskController.refreshTab(TaskStatus.blocked),
                 _blockedScrollController,
                 TaskStatus.blocked,
               )),
@@ -159,13 +159,13 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
   Pagination? _getPaginationByStatus(TaskStatus status) {
     switch (status) {
       case TaskStatus.todo:
-        return taskController.todoPagination.value;
+        return getTaskController.todoPagination.value;
       case TaskStatus.inProgress:
-        return taskController.inProgressPagination.value;
+        return getTaskController.inProgressPagination.value;
       case TaskStatus.completed:
-        return taskController.completedPagination.value;
+        return getTaskController.completedPagination.value;
       case TaskStatus.blocked:
-        return taskController.blockedPagination.value;
+        return getTaskController.blockedPagination.value;
       default:
         return null;
     }
