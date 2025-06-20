@@ -11,7 +11,7 @@ class TaskListModel {
   final TaskCategory category;
   final int point;
   final TaskPriority priority;
-  late final TaskStatus status;
+  TaskStatus status;
   final List<UserWithName>? assignees;
   final DateTime createdAt;
   final DateTime updatedAt;

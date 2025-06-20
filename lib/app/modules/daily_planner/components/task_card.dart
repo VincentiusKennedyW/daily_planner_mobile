@@ -1,9 +1,14 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
 import 'package:expense_tracker/app/data/models/task_models/task_model.dart';
+import 'package:expense_tracker/app/modules/daily_planner/controllers/start_task_controller.dart';
 import 'package:expense_tracker/core/helper/format_date_helper.dart';
 import 'package:expense_tracker/core/task.dart';
-import 'package:flutter/material.dart';
 
 Widget buildTaskCard(TaskListModel task) {
+  final StartTaskController startTaskController =
+      Get.find<StartTaskController>();
   return Container(
     margin: EdgeInsets.only(bottom: 16),
     decoration: BoxDecoration(
@@ -205,7 +210,25 @@ Widget buildTaskCard(TaskListModel task) {
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        startTaskController.startTask(task.id).then((_) {
+                          Get.snackbar(
+                            'Berhasil',
+                            'Task "${task.title}" telah dimulai.',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.green.withOpacity(0.1),
+                            colorText: Colors.green,
+                          );
+                        }).catchError((error) {
+                          Get.snackbar(
+                            'Gagal',
+                            'Tidak dapat memulai task: $error',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.red.withOpacity(0.1),
+                            colorText: Colors.red,
+                          );
+                        });
+                      },
                       icon: Icon(Icons.play_arrow_rounded, size: 16),
                       label: Text('Mulai', style: TextStyle(fontSize: 12)),
                       style: ElevatedButton.styleFrom(

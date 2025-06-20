@@ -29,7 +29,6 @@ class SearchUserController extends GetxController {
       'Accept': 'application/json',
     };
 
-    // Add auth token if exists
     final token = _storage.read('token');
     if (token != null) {
       headers['Authorization'] = 'Bearer $token';
@@ -50,7 +49,6 @@ class SearchUserController extends GetxController {
     });
   }
 
-  // Search users with keyword
   Future<void> searchUsers(String searchKeyword,
       {int page = 1, int limit = 10}) async {
     try {

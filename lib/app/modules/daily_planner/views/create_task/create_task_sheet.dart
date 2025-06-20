@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:expense_tracker/app/data/models/task_models/create_task_model.dart';
 import 'package:expense_tracker/app/data/models/user_model.dart';
 import 'package:expense_tracker/app/modules/daily_planner/controllers/search_user_controller.dart';
-import 'package:expense_tracker/app/modules/daily_planner/controllers/task_controller.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/create_task/widgets/bottom_action_widget.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/create_task/widgets/category_widget.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/create_task/widgets/deadline_widget.dart';
@@ -27,7 +26,8 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  final CreateTaskController createTaskController = Get.find<CreateTaskController>();
+  final CreateTaskController createTaskController =
+      Get.find<CreateTaskController>();
   final SearchUserController searchController = Get.put(SearchUserController());
 
   TaskCategory _selectedCategory = TaskCategory.development;
