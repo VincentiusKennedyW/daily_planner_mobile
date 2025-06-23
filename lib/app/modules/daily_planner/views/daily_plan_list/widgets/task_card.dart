@@ -1,3 +1,5 @@
+import 'package:expense_tracker/app/modules/daily_planner/controllers/complete_task_controller.dart';
+import 'package:expense_tracker/global_widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,6 +11,9 @@ import 'package:expense_tracker/core/task.dart';
 Widget buildTaskCard(TaskListModel task) {
   final StartTaskController startTaskController =
       Get.find<StartTaskController>();
+  final CompleteTaskController completeTaskController =
+      Get.find<CompleteTaskController>();
+
   return Container(
     margin: EdgeInsets.only(bottom: 16),
     decoration: BoxDecoration(
@@ -210,24 +215,22 @@ Widget buildTaskCard(TaskListModel task) {
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () {
-                        startTaskController.startTask(task.id).then((_) {
-                          Get.snackbar(
-                            'Berhasil',
-                            'Task "${task.title}" telah dimulai.',
-                            snackPosition: SnackPosition.BOTTOM,
-                            backgroundColor: Colors.green.withOpacity(0.1),
-                            colorText: Colors.green,
+                      onPressed: () async {
+                        final success =
+                            await startTaskController.startTask(task.id);
+                        if (success) {
+                          showCustomSnackbar(
+                            isSuccess: true,
+                            title: 'Berhasil!',
+                            message: 'Task "${task.title}" telah dimulai',
                           );
-                        }).catchError((error) {
-                          Get.snackbar(
-                            'Gagal',
-                            'Tidak dapat memulai task: $error',
-                            snackPosition: SnackPosition.BOTTOM,
-                            backgroundColor: Colors.red.withOpacity(0.1),
-                            colorText: Colors.red,
+                        } else {
+                          showCustomSnackbar(
+                            isSuccess: false,
+                            title: 'Ups, Ada Masalah!',
+                            message: startTaskController.errorMessage.value,
                           );
-                        });
+                        }
                       },
                       icon: Icon(Icons.play_arrow_rounded, size: 16),
                       label: Text('Mulai', style: TextStyle(fontSize: 12)),
@@ -251,7 +254,23 @@ Widget buildTaskCard(TaskListModel task) {
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () async {
+                        final success =
+                            await completeTaskController.completeTask(task.id);
+                        if (success) {
+                          showCustomSnackbar(
+                            isSuccess: true,
+                            title: 'Selesai!',
+                            message: 'Task "${task.title}" telah selesai',
+                          );
+                        } else {
+                          showCustomSnackbar(
+                            isSuccess: false,
+                            title: 'Ups, Ada Masalah!',
+                            message: completeTaskController.errorMessage.value,
+                          );
+                        }
+                      },
                       icon: Icon(Icons.check_rounded, size: 16),
                       label: Text('Selesai', style: TextStyle(fontSize: 12)),
                       style: ElevatedButton.styleFrom(

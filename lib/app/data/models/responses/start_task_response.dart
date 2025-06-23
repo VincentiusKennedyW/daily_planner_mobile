@@ -1,16 +1,16 @@
-class StartTaskResponse {
+class TaskProgressResponse {
   final String message;
   final String status;
   final StartTaskData data;
 
-  StartTaskResponse({
+  TaskProgressResponse({
     required this.message,
     required this.status,
     required this.data,
   });
 
-  factory StartTaskResponse.fromJson(Map<String, dynamic> json) {
-    return StartTaskResponse(
+  factory TaskProgressResponse.fromJson(Map<String, dynamic> json) {
+    return TaskProgressResponse(
       message: json['message'] ?? '',
       status: json['status'] ?? 'error',
       data: StartTaskData.fromJson(json['data'] ?? {}),

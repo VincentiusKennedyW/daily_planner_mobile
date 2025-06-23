@@ -1,7 +1,8 @@
-import 'package:expense_tracker/app/modules/daily_planner/controllers/get_task_controller.dart';
-import 'package:expense_tracker/core/task.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'package:expense_tracker/app/modules/daily_planner/controllers/get_task_controller.dart';
+import 'package:expense_tracker/core/task.dart';
 
 Widget buildBottomLoader(bool isLoadingMore, TaskStatus status) {
   final getTaskController = Get.find<GetTaskController>();

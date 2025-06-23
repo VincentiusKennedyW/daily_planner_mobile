@@ -1,5 +1,6 @@
 import 'package:expense_tracker/app/modules/daily_planner/controllers/create_task_controller.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/create_task/widgets/assignee_search_widget.dart';
+import 'package:expense_tracker/global_widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -124,7 +125,11 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
 
   void _submitTask() async {
     if (_titleController.text.trim().isEmpty) {
-      Get.snackbar('Error', 'Judul task harus diisi');
+      showCustomSnackbar(
+        isSuccess: false,
+        title: 'Judul Kosong',
+        message: 'Judul task tidak boleh kosong',
+      );
       return;
     }
 
@@ -146,9 +151,17 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
     if (success) {
       Get.back(result: true);
       _clearSearchData();
-      Get.snackbar('Sukses', 'Task berhasil dibuat');
+      showCustomSnackbar(
+        isSuccess: true,
+        title: 'Berhasil',
+        message: 'Task "${_titleController.text}" berhasil dibuat',
+      );
     } else {
-      Get.snackbar('Error', createTaskController.errorMessageCreate.value);
+      showCustomSnackbar(
+        isSuccess: false,
+        title: 'Gagal',
+        message: createTaskController.errorMessageCreate.value,
+      );
     }
   }
 }

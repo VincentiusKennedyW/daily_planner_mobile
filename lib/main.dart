@@ -5,7 +5,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:expense_tracker/app/modules/analythic/views/analythic_screen.dart';
 import 'package:expense_tracker/app/modules/auth/bindings/auth_binding.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/create_task/create_task_sheet.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/daily_planner_screen.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/daily_plan_list/daily_planner_screen.dart';
 import 'package:expense_tracker/app/modules/dashboard/views/dashboard_screen.dart';
 import 'package:expense_tracker/app/modules/profile/views/profile_screen.dart';
 import 'package:expense_tracker/app/modules/team/views/team_screen.dart';

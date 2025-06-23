@@ -1,4 +1,5 @@
 import 'package:expense_tracker/app/modules/auth/controllers/auth_controller.dart';
+import 'package:expense_tracker/global_widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -317,23 +318,20 @@ class _LoginScreenState extends State<LoginScreen>
 
         if (authController.isLoggedIn.value) {
           Get.offAllNamed('/dashboard');
-          Get.snackbar(
-            'Login Berhasil',
-            'Selamat datang, ${authController.currentUser.value?.name ?? 'User'}!',
-            backgroundColor: Colors.green,
-            colorText: Colors.white,
-            snackPosition: SnackPosition.TOP,
+          showCustomSnackbar(
+            isSuccess: true,
+            title: 'Berhasil Masuk',
+            message:
+                'Selamat datang, ${authController.currentUser.value?.name ?? 'User'}!',
           );
         }
       } catch (e) {
-        Get.snackbar(
-          'Error',
-          'Terjadi kesalahan saat login: ${e.toString()}',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.TOP,
+        showCustomSnackbar(
+          isSuccess: false,
+          title: 'Gagal Masuk',
+          message: e.toString(),
         );
-      } 
+      }
 
       setState(() {
         _isLoading = false;

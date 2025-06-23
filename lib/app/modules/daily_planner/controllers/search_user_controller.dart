@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer' as developer;
+
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:expense_tracker/app/data/models/responses/search_user_response.dart';
 import 'package:expense_tracker/app/data/models/user_model.dart';
 import 'package:expense_tracker/core/config.dart';
-import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:http/http.dart' as http;
 
 class SearchUserController extends GetxController {
   final RxList<UserModel> users = <UserModel>[].obs;
