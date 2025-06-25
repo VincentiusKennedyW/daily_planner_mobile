@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:expense_tracker/app/modules/daily_planner/views/task_detail/task_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -56,8 +57,7 @@ class TaskCard extends StatelessWidget {
         ),
       ),
       child: InkWell(
-        // onTap: () => _showTaskDetail(task),
-        onTap: () {},
+        onTap: () => Get.toNamed('/task-detail', arguments: task),
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: EdgeInsets.all(20),
@@ -120,6 +120,33 @@ class TaskCard extends StatelessWidget {
               SizedBox(height: 16),
               Row(
                 children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF6366F1).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.comment_outlined,
+                          size: 12,
+                          color: Colors.grey[600],
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          task.comments?.length.toString() ?? '0',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 8),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(

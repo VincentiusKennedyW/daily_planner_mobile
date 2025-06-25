@@ -104,11 +104,12 @@ class AssignToTaskController extends GetxController {
 
   void _updateTaskAssigneeWithCopyWith(int taskId, UserWithName user,
       {required bool isAssigning}) {
-    final taskIndex =
+    // Check in todoTasks
+    final todoTaskIndex =
         getTaskController.todoTasks.indexWhere((task) => task.id == taskId);
 
-    if (taskIndex != -1) {
-      final currentTask = getTaskController.todoTasks[taskIndex];
+    if (todoTaskIndex != -1) {
+      final currentTask = getTaskController.todoTasks[todoTaskIndex];
       List<UserWithName> updatedAssignees =
           List.from(currentTask.assignees ?? []);
 
@@ -125,7 +126,34 @@ class AssignToTaskController extends GetxController {
         updatedAt: DateTime.now(),
       );
 
-      getTaskController.todoTasks[taskIndex] = updatedTask;
+      getTaskController.todoTasks[todoTaskIndex] = updatedTask;
+      return;
+    }
+
+    // Check in inProgressTasks
+    final inProgressTaskIndex = getTaskController.inProgressTasks
+        .indexWhere((task) => task.id == taskId);
+
+    if (inProgressTaskIndex != -1) {
+      final currentTask =
+          getTaskController.inProgressTasks[inProgressTaskIndex];
+      List<UserWithName> updatedAssignees =
+          List.from(currentTask.assignees ?? []);
+
+      if (isAssigning) {
+        if (!updatedAssignees.any((assignee) => assignee.id == user.id)) {
+          updatedAssignees.add(user);
+        }
+      } else {
+        updatedAssignees.removeWhere((assignee) => assignee.id == user.id);
+      }
+
+      final updatedTask = currentTask.copyWith(
+        assignees: updatedAssignees,
+        updatedAt: DateTime.now(),
+      );
+
+      getTaskController.inProgressTasks[inProgressTaskIndex] = updatedTask;
     }
   }
 }

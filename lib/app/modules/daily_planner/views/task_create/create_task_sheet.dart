@@ -1,5 +1,5 @@
 import 'package:expense_tracker/app/modules/daily_planner/controllers/create_task_controller.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/create_task/widgets/assignee_search_widget.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/assignee_search_widget.dart';
 import 'package:expense_tracker/global_widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,23 +7,23 @@ import 'package:get/get.dart';
 import 'package:expense_tracker/app/data/models/task_models/create_task_model.dart';
 import 'package:expense_tracker/app/data/models/user_model.dart';
 import 'package:expense_tracker/app/modules/daily_planner/controllers/search_user_controller.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/create_task/widgets/bottom_action_widget.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/create_task/widgets/category_widget.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/create_task/widgets/deadline_widget.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/create_task/widgets/header_widget.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/create_task/widgets/priority_widget.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/create_task/widgets/tag_widget.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/create_task/widgets/title_description_widget.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/bottom_action_widget.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/category_widget.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/deadline_widget.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/header_widget.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/priority_widget.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/tag_widget.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/title_description_widget.dart';
 import 'package:expense_tracker/core/task.dart';
 
-class AdvancedAddTaskSheet extends StatefulWidget {
-  const AdvancedAddTaskSheet({super.key});
+class CreateTaskSheet extends StatefulWidget {
+  const CreateTaskSheet({super.key});
 
   @override
-  State<AdvancedAddTaskSheet> createState() => _AdvancedAddTaskSheetState();
+  State<CreateTaskSheet> createState() => _CreateTaskSheetState();
 }
 
-class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
+class _CreateTaskSheetState extends State<CreateTaskSheet> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
@@ -85,12 +85,12 @@ class _AdvancedAddTaskSheetState extends State<AdvancedAddTaskSheet> {
                     onSelectDate: _selectDueDate,
                   ),
                   const SizedBox(height: 16),
-                  TagSection(
-                    tags: _tags,
-                    onAddTag: (tag) => setState(() => _tags.add(tag)),
-                    onRemoveTag: (tag) => setState(() => _tags.remove(tag)),
-                  ),
-                  const SizedBox(height: 32),
+                  // TagSection(
+                  //   tags: _tags,
+                  //   onAddTag: (tag) => setState(() => _tags.add(tag)),
+                  //   onRemoveTag: (tag) => setState(() => _tags.remove(tag)),
+                  // ),
+                  // const SizedBox(height: 32),
                 ],
               ),
             ),

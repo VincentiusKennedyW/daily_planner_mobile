@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:expense_tracker/app/data/models/task_models/task_model.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/daily_plan_list/widgets/task_card.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/daily_plan_list/widgets/task_list_bottom_loader.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/task_list/widgets/task_card.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/task_list/widgets/task_list_bottom_loader.dart';
 import 'package:expense_tracker/core/task.dart';
 
 Widget buildTaskList(

@@ -1,11 +1,11 @@
-import 'package:expense_tracker/app/modules/daily_planner/controllers/get_task_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 
 import 'package:expense_tracker/app/data/models/pagination_model.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/daily_plan_list/widgets/taks_list.dart';
+import 'package:expense_tracker/app/modules/daily_planner/controllers/get_task_controller.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/task_list/widgets/taks_list.dart';
 import 'package:expense_tracker/core/task.dart';
 import 'package:expense_tracker/main.dart';
 
