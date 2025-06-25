@@ -39,6 +39,42 @@ class TaskListModel {
     this.comments,
   });
 
+  TaskListModel copyWith({
+    int? id,
+    String? title,
+    String? description,
+    TaskCategory? category,
+    int? point,
+    TaskPriority? priority,
+    TaskStatus? status,
+    List<UserWithName>? assignees,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    DateTime? dueDate,
+    List<String>? tags,
+    int? estimatedHours,
+    UserWithName? creator,
+    List<Comment>? comments,
+  }) {
+    return TaskListModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      category: category ?? this.category,
+      point: point ?? this.point,
+      priority: priority ?? this.priority,
+      status: status ?? this.status,
+      assignees: assignees ?? this.assignees,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      dueDate: dueDate ?? this.dueDate,
+      tags: tags ?? this.tags,
+      estimatedHours: estimatedHours ?? this.estimatedHours,
+      creator: creator ?? this.creator,
+      comments: comments ?? this.comments,
+    );
+  }
+
   factory TaskListModel.fromJson(Map<String, dynamic> json) {
     return TaskListModel(
       id: json['id'],

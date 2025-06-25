@@ -88,7 +88,9 @@ Widget buildTaskList(
             itemCount: tasks.length + 1,
             itemBuilder: (context, index) {
               if (index < tasks.length) {
-                return buildTaskCard(tasks[index]);
+                return TaskCard(
+                  task: tasks[index],
+                );
               } else {
                 return buildBottomLoader(isLoadMore, status);
               }
