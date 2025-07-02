@@ -1,12 +1,14 @@
-import 'package:expense_tracker/app/modules/daily_planner/controllers/create_task_controller.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/assignee_search_widget.dart';
-import 'package:expense_tracker/global_widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 
 import 'package:expense_tracker/app/data/models/task_models/create_task_model.dart';
+import 'package:expense_tracker/app/data/models/task_models/task_model.dart';
 import 'package:expense_tracker/app/data/models/user_model.dart';
+import 'package:expense_tracker/app/modules/daily_planner/controllers/comment_task_controller.dart';
 import 'package:expense_tracker/app/modules/daily_planner/controllers/search_user_controller.dart';
+import 'package:expense_tracker/app/modules/daily_planner/controllers/update_task_controller.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/assignee_search_widget.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/bottom_action_widget.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/category_widget.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/deadline_widget.dart';
@@ -14,27 +16,54 @@ import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widg
 import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/priority_widget.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widgets/title_description_widget.dart';
 import 'package:expense_tracker/core/task.dart';
+import 'package:expense_tracker/global_widgets/custom_snackbar.dart';
 
-class CreateTaskSheet extends StatefulWidget {
-  const CreateTaskSheet({super.key});
+class UpdateTaskSheet extends StatefulWidget {
+  final TaskListModel task;
+
+  const UpdateTaskSheet({super.key, required this.task});
 
   @override
-  State<CreateTaskSheet> createState() => _CreateTaskSheetState();
+  State<UpdateTaskSheet> createState() => UpdateTaskSheetState();
 }
 
-class _CreateTaskSheetState extends State<CreateTaskSheet> {
+class UpdateTaskSheetState extends State<UpdateTaskSheet> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  final CreateTaskController createTaskController =
-      Get.find<CreateTaskController>();
+  final UpdateTaskController _updateTaskController =
+      Get.find<UpdateTaskController>();
   final SearchUserController searchController = Get.put(SearchUserController());
+  final CommentTaskController _commentTaskController =
+      Get.find<CommentTaskController>();
 
   TaskCategory _selectedCategory = TaskCategory.development;
   TaskPriority _selectedPriority = TaskPriority.medium;
   DateTime? _dueDate;
   final List<String> _tags = [];
   List<UserModel> _selectedUsers = [];
+
+  @override
+  void initState() {
+    super.initState();
+    
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      // Use the current task from CommentTaskController which might have latest data
+      final latestTask = _commentTaskController.currentTask.value ?? widget.task;
+      _initializeTaskData(latestTask);
+    });
+  }
+
+  void _initializeTaskData(TaskListModel task) {
+    _titleController.text = task.title;
+    _descriptionController.text = task.description;
+    _selectedCategory = task.category;
+    _selectedPriority = task.priority;
+    _dueDate = task.dueDate;
+    _tags.clear();
+    _tags.addAll(task.tags ?? []);
+    _selectedUsers = List.from(task.assignees ?? []);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +76,7 @@ class _CreateTaskSheetState extends State<CreateTaskSheet> {
       child: Column(
         children: [
           const HeaderSection(
-            isEditing: false,
+            isEditing: true,
           ),
           Expanded(
             child: SingleChildScrollView(
@@ -96,16 +125,14 @@ class _CreateTaskSheetState extends State<CreateTaskSheet> {
               ),
             ),
           ),
-          Obx(
-            () => BottomActionSection(
-              isLoading: createTaskController.isLoadingCreate.value,
-              onCancel: () {
-                Get.back();
-                _clearSearchData();
-              },
-              onSubmit: _submitTask,
-            ),
-          ),
+          Obx(() => BottomActionSection(
+                isLoading: _updateTaskController.isLoadingUpdate.value,
+                onCancel: () {
+                  Get.back();
+                  _clearSearchData();
+                },
+                onSubmit: _submitTask,
+              )),
         ],
       ),
     );
@@ -113,9 +140,12 @@ class _CreateTaskSheetState extends State<CreateTaskSheet> {
 
   void _selectDueDate() async {
     final now = DateTime.now();
+    final initialDate =
+        _dueDate != null && _dueDate!.isAfter(now) ? _dueDate! : now;
+
     final date = await showDatePicker(
       context: context,
-      initialDate: _dueDate ?? now,
+      initialDate: initialDate,
       firstDate: now,
       lastDate: now.add(const Duration(days: 365)),
     );
@@ -147,7 +177,7 @@ class _CreateTaskSheetState extends State<CreateTaskSheet> {
       description: _descriptionController.text.trim(),
       category: _selectedCategory,
       priority: _selectedPriority,
-      status: TaskStatus.todo,
+      status: widget.task.status,
       assignees: assignees,
       dueDate: _dueDate,
       tags: _tags,
@@ -155,20 +185,26 @@ class _CreateTaskSheetState extends State<CreateTaskSheet> {
       point: _selectedCategory.points,
     );
 
-    final success = await createTaskController.createTask(newTask);
+    final success = await _updateTaskController.updateTask(
+      widget.task.id,
+      newTask,
+    );
     if (success) {
-      Get.back(result: true);
+      // Get the updated task from CommentTaskController which should have the latest data
+      final updatedTask = _commentTaskController.currentTask.value;
+      
+      Get.back(result: updatedTask ?? true);
       _clearSearchData();
       showCustomSnackbar(
         isSuccess: true,
         title: 'Berhasil',
-        message: 'Task "${_titleController.text}" berhasil dibuat',
+        message: 'Task "${_titleController.text}" berhasil diperbarui',
       );
     } else {
       showCustomSnackbar(
         isSuccess: false,
         title: 'Gagal',
-        message: createTaskController.errorMessageCreate.value,
+        message: _updateTaskController.errorMessageUpdate.value,
       );
     }
   }

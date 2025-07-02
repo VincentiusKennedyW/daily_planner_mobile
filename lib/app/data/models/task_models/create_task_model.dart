@@ -35,8 +35,10 @@ class CreateTaskModel {
       'priority': TaskModelHelper.taskPriorityToString(priority),
       'status': TaskModelHelper.taskStatusToString(status),
       'assignees': assignees,
-      // Pastikan dueDate di-convert ke UTC dan berakhiran 'Z'
-      'dueDate': dueDate?.toUtc().toIso8601String(),
+      'dueDate': dueDate != null
+          ? DateTime.utc(dueDate!.year, dueDate!.month, dueDate!.day)
+              .toIso8601String()
+          : null,
       'tags': tags,
       'estimatedHours': estimatedHours,
     };

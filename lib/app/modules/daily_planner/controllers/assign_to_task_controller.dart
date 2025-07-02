@@ -35,18 +35,17 @@ class AssignToTaskController extends GetxController {
       final userDataString = _storage.read('user_data');
       final userDataMap = json.decode(userDataString);
       final userModel = UserModel.fromJson(userDataMap);
-      final userWithName = UserWithName(
+      final userData = UserModel(
         id: userModel.id!,
         name: userModel.name!,
       );
 
-      _updateTaskAssigneeWithCopyWith(taskId, userWithName, isAssigning: true);
+      _updateTaskAssigneeWithCopyWith(taskId, userData, isAssigning: true);
 
       if (response.statusCode == 200) {
         return true;
       } else {
-        _updateTaskAssigneeWithCopyWith(taskId, userWithName,
-            isAssigning: false);
+        _updateTaskAssigneeWithCopyWith(taskId, userData, isAssigning: false);
 
         errorMessage.value = 'Failed to assign task';
         return false;
@@ -78,18 +77,17 @@ class AssignToTaskController extends GetxController {
       final userDataString = _storage.read('user_data');
       final userDataMap = json.decode(userDataString);
       final userModel = UserModel.fromJson(userDataMap);
-      final userWithName = UserWithName(
+      final userData = UserModel(
         id: userModel.id!,
         name: userModel.name!,
       );
 
-      _updateTaskAssigneeWithCopyWith(taskId, userWithName, isAssigning: false);
+      _updateTaskAssigneeWithCopyWith(taskId, userData, isAssigning: false);
 
       if (response.statusCode == 200) {
         return true;
       } else {
-        _updateTaskAssigneeWithCopyWith(taskId, userWithName,
-            isAssigning: true);
+        _updateTaskAssigneeWithCopyWith(taskId, userData, isAssigning: true);
 
         errorMessage.value = 'Failed to unassign task';
         return false;
@@ -102,16 +100,14 @@ class AssignToTaskController extends GetxController {
     }
   }
 
-  void _updateTaskAssigneeWithCopyWith(int taskId, UserWithName user,
+  void _updateTaskAssigneeWithCopyWith(int taskId, UserModel user,
       {required bool isAssigning}) {
-    // Check in todoTasks
     final todoTaskIndex =
         getTaskController.todoTasks.indexWhere((task) => task.id == taskId);
 
     if (todoTaskIndex != -1) {
       final currentTask = getTaskController.todoTasks[todoTaskIndex];
-      List<UserWithName> updatedAssignees =
-          List.from(currentTask.assignees ?? []);
+      List<UserModel> updatedAssignees = List.from(currentTask.assignees ?? []);
 
       if (isAssigning) {
         if (!updatedAssignees.any((assignee) => assignee.id == user.id)) {
@@ -130,15 +126,13 @@ class AssignToTaskController extends GetxController {
       return;
     }
 
-    // Check in inProgressTasks
     final inProgressTaskIndex = getTaskController.inProgressTasks
         .indexWhere((task) => task.id == taskId);
 
     if (inProgressTaskIndex != -1) {
       final currentTask =
           getTaskController.inProgressTasks[inProgressTaskIndex];
-      List<UserWithName> updatedAssignees =
-          List.from(currentTask.assignees ?? []);
+      List<UserModel> updatedAssignees = List.from(currentTask.assignees ?? []);
 
       if (isAssigning) {
         if (!updatedAssignees.any((assignee) => assignee.id == user.id)) {

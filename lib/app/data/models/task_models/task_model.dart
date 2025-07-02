@@ -12,13 +12,13 @@ class TaskListModel {
   final int point;
   final TaskPriority priority;
   TaskStatus status;
-  final List<UserWithName>? assignees;
+  final List<UserModel>? assignees;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? dueDate;
   final List<String>? tags;
   final int? estimatedHours;
-  final UserWithName creator;
+  final UserModel creator;
   final List<Comment>? comments;
 
   TaskListModel({
@@ -47,13 +47,13 @@ class TaskListModel {
     int? point,
     TaskPriority? priority,
     TaskStatus? status,
-    List<UserWithName>? assignees,
+    List<UserModel>? assignees,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? dueDate,
     List<String>? tags,
     int? estimatedHours,
-    UserWithName? creator,
+    UserModel? creator,
     List<Comment>? comments,
   }) {
     return TaskListModel(
@@ -86,7 +86,7 @@ class TaskListModel {
       status: TaskModelHelper.parseTaskStatus(json['status']),
       assignees: json['assignees'] != null
           ? (json['assignees'] as List)
-              .map((assignee) => UserWithName.fromJson(assignee))
+              .map((assignee) => UserModel.fromJson(assignee))
               .toList()
           : null,
       createdAt: DateTime.parse(json['createdAt']),
@@ -94,7 +94,7 @@ class TaskListModel {
       dueDate: json['dueDate'] != null ? DateTime.parse(json['dueDate']) : null,
       tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
       estimatedHours: json['estimatedHours'],
-      creator: UserWithName.fromJson(json['creator']),
+      creator: UserModel.fromJson(json['creator']),
       comments: json['comments'] != null
           ? (json['comments'] as List)
               .map((comment) => Comment.fromJson(comment))

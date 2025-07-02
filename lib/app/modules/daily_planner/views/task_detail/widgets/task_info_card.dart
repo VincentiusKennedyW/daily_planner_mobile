@@ -240,7 +240,7 @@ class TaskInfoCard extends StatelessWidget {
                     radius: 12,
                     backgroundColor: Color(0xFF6366F1),
                     child: Text(
-                      assignee.name[0].toUpperCase(),
+                      assignee.name?[0].toUpperCase() ?? '?',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 10,
@@ -250,7 +250,7 @@ class TaskInfoCard extends StatelessWidget {
                   ),
                   SizedBox(width: 8),
                   Text(
-                    assignee.name,
+                    assignee.name ?? 'Unknown',
                     style: TextStyle(
                       fontSize: 12,
                       color: Color(0xFF6366F1),

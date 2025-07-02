@@ -17,7 +17,10 @@ class TaskDetailScreen extends StatefulWidget {
 }
 
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
-  final CommentTaskController _commentTaskController =
+  // final CommentTaskController _commentTaskController =
+  //     Get.find<CommentTaskController>();
+
+  CommentTaskController get _commentTaskController =>
       Get.find<CommentTaskController>();
 
   @override
@@ -30,7 +33,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: TaskDetailHeader(),
+      appBar: TaskDetailHeader(
+        task: _commentTaskController.currentTask.value ?? widget.task,
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(

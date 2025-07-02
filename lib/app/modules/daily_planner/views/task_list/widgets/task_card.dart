@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:expense_tracker/app/modules/daily_planner/views/task_detail/task_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -216,7 +215,7 @@ class TaskCard extends StatelessWidget {
                                 backgroundColor:
                                     Color(0xFF6366F1).withOpacity(0.1),
                                 child: Text(
-                                  assignee.name[0].toUpperCase(),
+                                  assignee.name?[0].toUpperCase() ?? '?',
                                   style: TextStyle(
                                     color: Color(0xFF6366F1),
                                     fontSize: 10,
@@ -226,7 +225,7 @@ class TaskCard extends StatelessWidget {
                               ),
                               SizedBox(width: 8),
                               Text(
-                                assignee.name,
+                                assignee.name ?? 'Unknown',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[600],

@@ -38,13 +38,13 @@ class CreatedTaskModel {
   final int point;
   final TaskPriority priority;
   final TaskStatus status;
-  final List<UserWithName>? assignees;
+  final List<UserModel>? assignees;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? dueDate;
   final List<String>? tags;
   final int? estimatedHours;
-  final UserWithName creator;
+  final UserModel creator;
 
   CreatedTaskModel({
     required this.id,
@@ -74,7 +74,7 @@ class CreatedTaskModel {
       status: TaskModelHelper.parseTaskStatus(json['status']),
       assignees: json['assignees'] != null
           ? (json['assignees'] as List)
-              .map((assignee) => UserWithName.fromJson(assignee))
+              .map((assignee) => UserModel.fromJson(assignee))
               .toList()
           : null,
       createdAt: DateTime.parse(json['createdAt']),
@@ -82,7 +82,7 @@ class CreatedTaskModel {
       dueDate: json['dueDate'] != null ? DateTime.parse(json['dueDate']) : null,
       tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
       estimatedHours: json['estimatedHours'],
-      creator: UserWithName.fromJson(json['creator']),
+      creator: UserModel.fromJson(json['creator']),
     );
   }
 

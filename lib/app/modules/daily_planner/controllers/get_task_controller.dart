@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer' as developer;
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -97,44 +96,94 @@ class GetTaskController extends GetxController with TaskHelpers {
   }
 
   void _updateTasksByStatus(TaskStatus status, List<TaskListModel> tasks) {
-    switch (status) {
-      case TaskStatus.todo:
-        todoTasks.assignAll(tasks);
-        break;
-      case TaskStatus.inProgress:
-        inProgressTasks.assignAll(tasks);
-        break;
-      case TaskStatus.completed:
-        completedTasks.assignAll(tasks);
-        break;
-      case TaskStatus.blocked:
-        blockedTasks.assignAll(tasks);
-        break;
-      default:
-        break;
-    }
+    _getTaskListByStatus(status).assignAll(tasks);
   }
 
   void _appendTasksByStatus(TaskStatus status, List<TaskListModel> newTasks) {
-    switch (status) {
-      case TaskStatus.todo:
-        todoTasks.addAll(newTasks);
-        break;
-      case TaskStatus.inProgress:
-        inProgressTasks.addAll(newTasks);
-        break;
-      case TaskStatus.completed:
-        completedTasks.addAll(newTasks);
-        break;
-      case TaskStatus.blocked:
-        blockedTasks.addAll(newTasks);
-        break;
-      default:
-        break;
-    }
+    _getTaskListByStatus(status).addAll(newTasks);
   }
 
   Future<void> refreshTab(TaskStatus status) async {
     await getTasksByStatus(status);
+  }
+
+  RxList<TaskListModel> _getTaskListByStatus(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.todo:
+        return todoTasks;
+      case TaskStatus.inProgress:
+        return inProgressTasks;
+      case TaskStatus.completed:
+        return completedTasks;
+      case TaskStatus.blocked:
+        return blockedTasks;
+      default:
+        return todoTasks;
+    }
+  }
+
+  void updateTaskInList(TaskListModel updatedTask) {
+    TaskListModel? currentTask = findTaskById(updatedTask.id);
+    if (currentTask == null) return;
+
+    if (currentTask.status == updatedTask.status) {
+      _updateTaskInPlace(updatedTask);
+    } else {
+      _removeTaskFromAllLists(updatedTask.id);
+      _addTaskToStatusList(updatedTask);
+    }
+  }
+
+  void _updateTaskInPlace(TaskListModel updatedTask) {
+    final taskList = _getTaskListByStatus(updatedTask.status);
+    int index = taskList.indexWhere((task) => task.id == updatedTask.id);
+    if (index != -1) taskList[index] = updatedTask;
+  }
+
+  void _addTaskToStatusList(TaskListModel task) {
+    _getTaskListByStatus(task.status).insert(0, task);
+  }
+
+  void _removeTaskFromAllLists(int taskId) {
+    todoTasks.removeWhere((task) => task.id == taskId);
+    inProgressTasks.removeWhere((task) => task.id == taskId);
+    completedTasks.removeWhere((task) => task.id == taskId);
+    blockedTasks.removeWhere((task) => task.id == taskId);
+  }
+
+  TaskListModel? findTaskById(int taskId) {
+    for (TaskStatus status in [
+      TaskStatus.todo,
+      TaskStatus.inProgress,
+      TaskStatus.completed,
+      TaskStatus.blocked
+    ]) {
+      final taskList = _getTaskListByStatus(status);
+      final foundTask = taskList.firstWhereOrNull((task) => task.id == taskId);
+      if (foundTask != null) return foundTask;
+    }
+    return null;
+  }
+
+  void removeTaskFromList(int taskId) {
+    TaskListModel? taskToDelete = findTaskById(taskId);
+    if (taskToDelete == null) return;
+
+    _removeTaskFromAllLists(taskId);
+
+    _decrementPaginationCount(taskToDelete.status);
+  }
+
+  void _decrementPaginationCount(TaskStatus status) {
+    final currentPagination = getPagination(status);
+    if (currentPagination != null) {
+      updatePagination(
+          status,
+          Pagination(
+            page: currentPagination.page,
+            totalPages: currentPagination.totalPages,
+            total: (currentPagination.total ?? 0) - 1,
+          ));
+    }
   }
 }

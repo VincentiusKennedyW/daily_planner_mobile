@@ -115,7 +115,7 @@ class CustomConfirmationDialog extends StatelessWidget {
                     children: [
                       // Cancel Button
                       Expanded(
-                        child: Container(
+                        child: SizedBox(
                           height: 50,
                           child: OutlinedButton(
                             onPressed: () {
@@ -147,7 +147,7 @@ class CustomConfirmationDialog extends StatelessWidget {
 
                       // Confirm Button
                       Expanded(
-                        child: Container(
+                        child: SizedBox(
                           height: 50,
                           child: ElevatedButton(
                             onPressed: () {

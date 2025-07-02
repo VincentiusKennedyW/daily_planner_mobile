@@ -1,8 +1,12 @@
-
 import 'package:flutter/material.dart';
 
 class HeaderSection extends StatelessWidget {
-  const HeaderSection({super.key});
+  final bool isEditing;
+
+  const HeaderSection({
+    super.key,
+    this.isEditing = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,8 +19,8 @@ class HeaderSection extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Text(
-            'Buat Planning Baru',
+          Text(
+            isEditing ? 'Perbarui Task' : 'Buat Task Baru',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
