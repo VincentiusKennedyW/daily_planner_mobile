@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterScreen extends StatefulWidget {
   final VoidCallback onSwitch;
 
-  const RegisterPage({super.key, required this.onSwitch});
+  const RegisterScreen({super.key, required this.onSwitch});
 
   @override
-  _RegisterPageState createState() => _RegisterPageState();
+  RegisterScreenState createState() => RegisterScreenState();
 }
 
-class _RegisterPageState extends State<RegisterPage>
+class RegisterScreenState extends State<RegisterScreen>
     with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();

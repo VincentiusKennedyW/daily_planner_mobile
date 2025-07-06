@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/modules/daily_planner/controllers/get_project_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/get_instance.dart';
@@ -20,6 +21,8 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
   late TabController _tabController;
 
   final GetTaskController getTaskController = Get.find<GetTaskController>();
+  final GetProjectController getProjectController =
+      Get.find<GetProjectController>();
 
   final ScrollController _todoScrollController = ScrollController();
   final ScrollController _inProgressScrollController = ScrollController();

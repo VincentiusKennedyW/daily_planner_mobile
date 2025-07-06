@@ -2,6 +2,7 @@ import 'package:expense_tracker/app/modules/auth/bindings/auth_binding.dart';
 import 'package:expense_tracker/app/data/middleware/auth_middleware.dart';
 import 'package:expense_tracker/app/modules/auth/views/login_screen.dart';
 import 'package:expense_tracker/app/modules/daily_planner/bindings/comment_task_binding.dart';
+import 'package:expense_tracker/app/modules/daily_planner/bindings/project_binding.dart';
 import 'package:expense_tracker/app/modules/daily_planner/bindings/task_binding.dart';
 import 'package:expense_tracker/app/modules/daily_planner/bindings/user_binding.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/task_detail/task_detail_screen.dart';
@@ -32,6 +33,7 @@ class AppRoutes {
         UserBinding(),
         TaskAssigneeBinding(),
         LeaderboardBinding(),
+        ProjectBinding(),
       ],
       middlewares: [AuthMiddleware()],
     ),
@@ -44,6 +46,7 @@ class AppRoutes {
         TaskAssigneeBinding(),
         TaskCommentBinding(),
       ],
+      middlewares: [AuthMiddleware()],
     ),
   ];
 }

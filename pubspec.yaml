@@ -15,6 +15,7 @@ dependencies:
   fl_chart: ^1.0.0
   flutter:
     sdk: flutter
+  flutter_expandable_fab: ^2.5.2
   get: ^4.7.2
   get_storage: ^2.1.1
   http: ^1.4.0

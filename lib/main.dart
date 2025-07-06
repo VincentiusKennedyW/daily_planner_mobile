@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import 'package:expense_tracker/app/modules/analythic/views/analythic_screen.dart';
 import 'package:expense_tracker/app/modules/auth/bindings/auth_binding.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/project_create/create_project_sheet.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/task_create/create_task_sheet.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/task_list/task_list_screen.dart';
 import 'package:expense_tracker/app/modules/dashboard/views/dashboard_screen.dart';
 import 'package:expense_tracker/app/modules/profile/views/profile_screen.dart';
 import 'package:expense_tracker/app/modules/team/views/team_screen.dart';
 import 'package:expense_tracker/app/routes/routes.dart';
+import 'package:expense_tracker/core/base_http_service.dart';
 import 'package:expense_tracker/core/task.dart';
 import 'package:expense_tracker/core/user.dart';
 import 'package:expense_tracker/global_widgets/bottom_nav_bar.dart';
@@ -19,7 +22,13 @@ void main() async {
 
   await GetStorage.init();
 
+  await initServices();
+
   runApp(RDPlannerApp());
+}
+
+Future<void> initServices() async {
+  Get.put<BaseService>(BaseService(), permanent: true);
 }
 
 class RDPlannerApp extends StatelessWidget {
@@ -145,6 +154,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ExpandableFabState> _key = GlobalKey<ExpandableFabState>();
     return Scaffold(
       extendBody: false,
       body: AnimatedSwitcher(
@@ -174,29 +184,88 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       floatingActionButton: _selectedIndex == 1
           ? ScaleTransition(
               scale: _fabAnimation,
-              child: FloatingActionButton.extended(
-                onPressed: () => _showAdvancedAddTaskDialog(context),
-                icon: Icon(Icons.add_rounded),
-                label: Text('Buat Planning'),
-                backgroundColor: Color(0xFF6366F1),
-                foregroundColor: Colors.white,
-                elevation: 8,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+              child: ExpandableFab(
+                distance: 60.0,
+                type: ExpandableFabType.up,
+                openButtonBuilder: RotateFloatingActionButtonBuilder(
+                  child: const Icon(Icons.add),
+                  fabSize: ExpandableFabSize.regular,
+                  backgroundColor: const Color(0xFF6366F1),
+                  foregroundColor: Colors.white,
+                  shape: const CircleBorder(),
                 ),
+                closeButtonBuilder: DefaultFloatingActionButtonBuilder(
+                  child: const Icon(Icons.close_rounded),
+                  fabSize: ExpandableFabSize.small,
+                  backgroundColor: const Color(0xFFEF4444),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                ),
+                childrenAnimation: ExpandableFabAnimation.none,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Task',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      FloatingActionButton.small(
+                        heroTag: "task",
+                        onPressed: () => _showAddTaskDialog(context),
+                        backgroundColor: const Color(0xFF6366F1),
+                        foregroundColor: Colors.white,
+                        child: const Icon(Icons.task),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        'Project',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      FloatingActionButton.small(
+                        heroTag: "project",
+                        onPressed: () => _showAddProjectDialog(context),
+                        backgroundColor: const Color(0xFF10B981),
+                        foregroundColor: Colors.white,
+                        child: const Icon(Icons.drive_folder_upload_rounded),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             )
           : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
+      floatingActionButtonLocation: ExpandableFab.location,
     );
   }
 
-  void _showAdvancedAddTaskDialog(BuildContext context) {
+  void _showAddTaskDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => CreateTaskSheet(),
+    );
+  }
+
+  void _showAddProjectDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CreateProjectSheet(),
     );
   }
 }
