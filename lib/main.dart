@@ -186,6 +186,10 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               scale: _fabAnimation,
               child: ExpandableFab(
                 distance: 60.0,
+                overlayStyle: ExpandableFabOverlayStyle(
+                  blur: 6.0,
+                  color: Colors.white.withOpacity(0.2),
+                ),
                 type: ExpandableFabType.up,
                 openButtonBuilder: RotateFloatingActionButtonBuilder(
                   child: const Icon(Icons.add),

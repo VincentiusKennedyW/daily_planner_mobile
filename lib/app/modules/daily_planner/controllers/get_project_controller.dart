@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:expense_tracker/app/data/models/pagination_model.dart';
 import 'package:expense_tracker/app/data/models/project_models/project_model.dart';
 import 'package:expense_tracker/app/data/models/responses/project_response.dart';
-import 'package:expense_tracker/app/data/models/responses/create_project_response.dart';
 import 'package:expense_tracker/core/base_http_service.dart';
 
 class GetProjectController extends GetxController {
