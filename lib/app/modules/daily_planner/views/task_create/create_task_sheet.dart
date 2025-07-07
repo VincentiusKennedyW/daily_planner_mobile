@@ -16,7 +16,9 @@ import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widg
 import 'package:expense_tracker/core/task.dart';
 
 class CreateTaskSheet extends StatefulWidget {
-  const CreateTaskSheet({super.key});
+  final VoidCallback? onSuccess;
+  
+  const CreateTaskSheet({super.key, this.onSuccess});
 
   @override
   State<CreateTaskSheet> createState() => _CreateTaskSheetState();
@@ -159,6 +161,7 @@ class _CreateTaskSheetState extends State<CreateTaskSheet> {
     if (success) {
       Get.back(result: true);
       _clearSearchData();
+      widget.onSuccess?.call(); // Close FAB
       showCustomSnackbar(
         isSuccess: true,
         title: 'Berhasil',

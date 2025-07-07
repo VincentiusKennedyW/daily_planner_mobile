@@ -101,6 +101,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   int _selectedIndex = 0;
+  final GlobalKey<ExpandableFabState> _fabKey = GlobalKey<ExpandableFabState>();
 
   final List<NavigationItem> _navigationItems = [
     NavigationItem(
@@ -138,7 +139,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<ExpandableFabState> _key = GlobalKey<ExpandableFabState>();
     return Scaffold(
       extendBody: false,
       body: AnimatedSwitcher(
@@ -167,6 +167,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       ),
       floatingActionButton: _selectedIndex == 1
           ? ExpandableFab(
+              key: _fabKey,
               distance: 60.0,
               overlayStyle: ExpandableFabOverlayStyle(
                 blur: 6.0,
@@ -236,13 +237,22 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     );
   }
 
+  void _closeFab() {
+    _fabKey.currentState?.toggle();
+  }
+
   void _showAddTaskDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => CreateTaskSheet(),
-    );
+      builder: (context) => CreateTaskSheet(onSuccess: _closeFab),
+    ).then((_) {
+      // Close FAB if modal is dismissed without success
+      if (_fabKey.currentState?.isOpen == true) {
+        _closeFab();
+      }
+    });
   }
 
   void _showAddProjectDialog(BuildContext context) {
@@ -250,8 +260,13 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => CreateProjectSheet(),
-    );
+      builder: (context) => CreateProjectSheet(onSuccess: _closeFab),
+    ).then((_) {
+      // Close FAB if modal is dismissed without success
+      if (_fabKey.currentState?.isOpen == true) {
+        _closeFab();
+      }
+    });
   }
 }
 

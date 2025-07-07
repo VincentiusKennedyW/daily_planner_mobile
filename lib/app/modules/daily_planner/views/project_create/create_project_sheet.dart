@@ -12,7 +12,9 @@ import 'package:expense_tracker/app/modules/daily_planner/views/task_create/widg
 import 'package:expense_tracker/global_widgets/custom_snackbar.dart';
 
 class CreateProjectSheet extends StatefulWidget {
-  const CreateProjectSheet({super.key});
+  final VoidCallback? onSuccess;
+  
+  const CreateProjectSheet({super.key, this.onSuccess});
 
   @override
   State<CreateProjectSheet> createState() => _CreateProjectSheetState();
@@ -209,6 +211,7 @@ class _CreateProjectSheetState extends State<CreateProjectSheet> {
     if (success) {
       Get.back(result: true);
       _clearData();
+      widget.onSuccess?.call(); // Close FAB
       showCustomSnackbar(
         isSuccess: true,
         title: 'Berhasil',
