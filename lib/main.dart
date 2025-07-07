@@ -7,7 +7,7 @@ import 'package:expense_tracker/app/modules/analythic/views/analythic_screen.dar
 import 'package:expense_tracker/app/modules/auth/bindings/auth_binding.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/project_create/create_project_sheet.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/task_create/create_task_sheet.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/task_list/task_list_screen.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/daily_planner_screen.dart';
 import 'package:expense_tracker/app/modules/dashboard/views/dashboard_screen.dart';
 import 'package:expense_tracker/app/modules/profile/views/profile_screen.dart';
 import 'package:expense_tracker/app/modules/team/views/team_screen.dart';
@@ -101,8 +101,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   int _selectedIndex = 0;
-  late AnimationController _fabAnimationController;
-  late Animation<double> _fabAnimation;
 
   final List<NavigationItem> _navigationItems = [
     NavigationItem(
@@ -136,20 +134,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     TaskManager.updateUserStats();
-    _fabAnimationController = AnimationController(
-      duration: Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _fabAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _fabAnimationController, curve: Curves.easeInOut),
-    );
-    _fabAnimationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _fabAnimationController.dispose();
-    super.dispose();
   }
 
   @override
@@ -182,73 +166,70 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
             .toList(),
       ),
       floatingActionButton: _selectedIndex == 1
-          ? ScaleTransition(
-              scale: _fabAnimation,
-              child: ExpandableFab(
-                distance: 60.0,
-                overlayStyle: ExpandableFabOverlayStyle(
-                  blur: 6.0,
-                  color: Colors.white.withOpacity(0.2),
-                ),
-                type: ExpandableFabType.up,
-                openButtonBuilder: RotateFloatingActionButtonBuilder(
-                  child: const Icon(Icons.add),
-                  fabSize: ExpandableFabSize.regular,
-                  backgroundColor: const Color(0xFF6366F1),
-                  foregroundColor: Colors.white,
-                  shape: const CircleBorder(),
-                ),
-                closeButtonBuilder: DefaultFloatingActionButtonBuilder(
-                  child: const Icon(Icons.close_rounded),
-                  fabSize: ExpandableFabSize.small,
-                  backgroundColor: const Color(0xFFEF4444),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                ),
-                childrenAnimation: ExpandableFabAnimation.none,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'Task',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      FloatingActionButton.small(
-                        heroTag: "task",
-                        onPressed: () => _showAddTaskDialog(context),
-                        backgroundColor: const Color(0xFF6366F1),
-                        foregroundColor: Colors.white,
-                        child: const Icon(Icons.task),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        'Project',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      FloatingActionButton.small(
-                        heroTag: "project",
-                        onPressed: () => _showAddProjectDialog(context),
-                        backgroundColor: const Color(0xFF10B981),
-                        foregroundColor: Colors.white,
-                        child: const Icon(Icons.drive_folder_upload_rounded),
-                      ),
-                    ],
-                  ),
-                ],
+          ? ExpandableFab(
+              distance: 60.0,
+              overlayStyle: ExpandableFabOverlayStyle(
+                blur: 6.0,
+                color: Colors.white.withOpacity(0.2),
               ),
+              type: ExpandableFabType.up,
+              openButtonBuilder: RotateFloatingActionButtonBuilder(
+                child: const Icon(Icons.add),
+                fabSize: ExpandableFabSize.regular,
+                backgroundColor: const Color(0xFF6366F1),
+                foregroundColor: Colors.white,
+                shape: const CircleBorder(),
+              ),
+              closeButtonBuilder: DefaultFloatingActionButtonBuilder(
+                child: const Icon(Icons.close_rounded),
+                fabSize: ExpandableFabSize.small,
+                backgroundColor: const Color(0xFFEF4444),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+              ),
+              childrenAnimation: ExpandableFabAnimation.none,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Task',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    FloatingActionButton.small(
+                      heroTag: "task",
+                      onPressed: () => _showAddTaskDialog(context),
+                      backgroundColor: const Color(0xFF6366F1),
+                      foregroundColor: Colors.white,
+                      child: const Icon(Icons.task),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(
+                      'Project',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    FloatingActionButton.small(
+                      heroTag: "project",
+                      onPressed: () => _showAddProjectDialog(context),
+                      backgroundColor: const Color(0xFF10B981),
+                      foregroundColor: Colors.white,
+                      child: const Icon(Icons.drive_folder_upload_rounded),
+                    ),
+                  ],
+                ),
+              ],
             )
           : null,
       floatingActionButtonLocation: ExpandableFab.location,
