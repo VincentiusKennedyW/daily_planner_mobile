@@ -9,7 +9,7 @@ class ProjectModel {
   final DateTime? endDate;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final List<TaskListModel>? taskList;
+  final List<TaskListModel>? tasks;
 
   ProjectModel({
     required this.id,
@@ -19,7 +19,7 @@ class ProjectModel {
     this.endDate,
     required this.createdAt,
     required this.updatedAt,
-    this.taskList,
+    this.tasks,
   });
 
   ProjectModel copyWith({
@@ -30,7 +30,7 @@ class ProjectModel {
     DateTime? endDate,
     DateTime? createdAt,
     DateTime? updatedAt,
-    List<TaskListModel>? taskList,
+    List<TaskListModel>? tasks,
   }) {
     return ProjectModel(
       id: id ?? this.id,
@@ -40,7 +40,7 @@ class ProjectModel {
       endDate: endDate ?? this.endDate,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      taskList: taskList ?? this.taskList,
+      tasks: tasks ?? this.tasks,
     );
   }
 
@@ -53,7 +53,7 @@ class ProjectModel {
       endDate: json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
-      taskList: (json['tasks'] != null
+      tasks: (json['tasks'] != null
           ? (json['tasks'] as List)
               .map((task) => TaskListModel.fromJson(task))
               .toList()
@@ -70,7 +70,7 @@ class ProjectModel {
       'endDate': endDate?.toIso8601String(),
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
-      'taskList': taskList?.map((task) => task.toJson()).toList(),
+      'tasks': tasks?.map((task) => task.toJson()).toList(),
     };
   }
 }

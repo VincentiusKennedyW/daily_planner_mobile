@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer' as developer;
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -84,56 +83,16 @@ class CreateTaskController extends GetxController {
           return false;
         }
       } else {
-        return _handleErrorResponse(response);
+        final errorData = json.decode(response.body);
+        errorMessageCreate.value =
+            'Failed to create task: ${errorData['message'] ?? 'Unknown error'}';
+        return false;
       }
     } catch (e) {
       errorMessageCreate.value = 'Failed to create task: $e';
       return false;
     } finally {
       isLoadingCreate.value = false;
-    }
-  }
-
-  bool _handleErrorResponse(http.Response response) {
-    try {
-      final Map<String, dynamic> errorData = json.decode(response.body);
-      String errorMessage = 'HTTP Error: ${response.statusCode}';
-
-      if (errorData.containsKey('message')) {
-        errorMessage = errorData['message'];
-      } else if (errorData.containsKey('error')) {
-        errorMessage = errorData['error'];
-      } else if (errorData.containsKey('msg')) {
-        errorMessage = errorData['msg'];
-      } else if (errorData.containsKey('detail')) {
-        errorMessage = errorData['detail'];
-      } else if (errorData.containsKey('errors')) {
-        final errors = errorData['errors'];
-        if (errors is Map) {
-          final List<String> errorMessages = [];
-          errors.forEach((key, value) {
-            if (value is List) {
-              errorMessages.addAll(value.cast<String>());
-            } else {
-              errorMessages.add(value.toString());
-            }
-          });
-          errorMessage = errorMessages.join(', ');
-        } else if (errors is List) {
-          errorMessage = errors.join(', ');
-        }
-      }
-
-      errorMessageCreate.value = errorMessage;
-      developer.log('HTTP Error ${response.statusCode}: $errorMessage',
-          name: 'CreateTaskController');
-      return false;
-    } catch (_) {
-      errorMessageCreate.value = 'HTTP Error: ${response.statusCode}';
-      developer.log(
-          'Failed to parse error: ${response.statusCode} - ${response.body}',
-          name: 'CreateTaskController');
-      return false;
     }
   }
 }

@@ -2,11 +2,11 @@ import 'package:expense_tracker/app/modules/daily_planner/controllers/get_projec
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/get_instance.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
 
-import 'package:expense_tracker/app/data/models/pagination_model.dart';
 import 'package:expense_tracker/app/modules/daily_planner/controllers/get_task_controller.dart';
-import 'package:expense_tracker/app/modules/daily_planner/views/task_list/widgets/taks_list.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/project_list/project_list_view.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/task_list/task_list_view.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/widgets/view_toggle_switch.dart';
 import 'package:expense_tracker/core/task.dart';
 
 class DailyPlannerScreen extends StatefulWidget {
@@ -27,12 +27,16 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
   final ScrollController _todoScrollController = ScrollController();
   final ScrollController _inProgressScrollController = ScrollController();
   final ScrollController _completedScrollController = ScrollController();
-  final ScrollController _blockedScrollController = ScrollController();
+  final ScrollController _projectScrollController = ScrollController();
+  // final ScrollController _blockedScrollController = ScrollController();
+
+  // Toggle between Project and Task view
+  bool _isProjectView = false;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
 
     _setupScrollListeners();
   }
@@ -65,14 +69,23 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
       }
     });
 
-    _blockedScrollController.addListener(() {
-      if (_blockedScrollController.position.pixels >=
-          _blockedScrollController.position.maxScrollExtent - 100) {
-        if (getTaskController.canLoadMoreBlocked()) {
-          getTaskController.loadMoreTaskByStatus(TaskStatus.blocked);
+    _projectScrollController.addListener(() {
+      if (_projectScrollController.position.pixels >=
+          _projectScrollController.position.maxScrollExtent - 100) {
+        if (getProjectController.hasNextPage) {
+          getProjectController.loadMoreProjects();
         }
       }
     });
+
+    // _blockedScrollController.addListener(() {
+    //   if (_blockedScrollController.position.pixels >=
+    //       _blockedScrollController.position.maxScrollExtent - 100) {
+    //     if (getTaskController.canLoadMoreBlocked()) {
+    //       getTaskController.loadMoreTaskByStatus(TaskStatus.blocked);
+    //     }
+    //   }
+    // });
   }
 
   @override
@@ -80,7 +93,8 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
     _todoScrollController.dispose();
     _inProgressScrollController.dispose();
     _completedScrollController.dispose();
-    _blockedScrollController.dispose();
+    _projectScrollController.dispose();
+    // _blockedScrollController.dispose();
     _tabController.dispose();
     super.dispose();
   }
@@ -93,83 +107,42 @@ class _DailyPlannerScreenState extends State<DailyPlannerScreen>
           'Planning Harian',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: Color(0xFF6366F1),
-          unselectedLabelColor: Colors.grey[600],
-          indicatorColor: Color(0xFF6366F1),
-          tabs: [
-            Obx(() => Tab(
-                text:
-                    'To Do (${_getPaginationByStatus(TaskStatus.todo)?.total ?? 0})')),
-            Obx(() => Tab(
-                text:
-                    'Progress (${_getPaginationByStatus(TaskStatus.inProgress)?.total ?? 0})')),
-            Obx(() => Tab(
-                text:
-                    'Done (${_getPaginationByStatus(TaskStatus.completed)?.total ?? 0})')),
-            Obx(() => Tab(
-                text:
-                    'Blocked (${_getPaginationByStatus(TaskStatus.blocked)?.total ?? 0})')),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          Obx(() => buildTaskList(
-                getTaskController.todoTasks,
-                getTaskController.isTodoLoading.value,
-                getTaskController.isTodoPaginationLoading.value,
-                getTaskController.todoError.value,
-                () => getTaskController.refreshTab(TaskStatus.todo),
-                _todoScrollController,
-                TaskStatus.todo,
-              )),
-          Obx(() => buildTaskList(
-                getTaskController.inProgressTasks,
-                getTaskController.isInProgressLoading.value,
-                getTaskController.isInProgressPaginationLoading.value,
-                getTaskController.inProgressError.value,
-                () => getTaskController.refreshTab(TaskStatus.inProgress),
-                _inProgressScrollController,
-                TaskStatus.inProgress,
-              )),
-          Obx(() => buildTaskList(
-                getTaskController.completedTasks,
-                getTaskController.isCompletedLoading.value,
-                getTaskController.isCompletedPaginationLoading.value,
-                getTaskController.completedError.value,
-                () => getTaskController.refreshTab(TaskStatus.completed),
-                _completedScrollController,
-                TaskStatus.completed,
-              )),
-          Obx(() => buildTaskList(
-                getTaskController.blockedTasks,
-                getTaskController.isBlockedLoading.value,
-                getTaskController.isBlockedPaginationLoading.value,
-                getTaskController.blockedError.value,
-                () => getTaskController.refreshTab(TaskStatus.blocked),
-                _blockedScrollController,
-                TaskStatus.blocked,
-              )),
+        bottom: _isProjectView
+            ? null
+            : TaskTabBar(
+                tabController: _tabController,
+                controller: getTaskController,
+              ),
+        actions: [
+          ViewToggleSwitch(
+            isProjectView: _isProjectView,
+            onChanged: (value) {
+              setState(() {
+                _isProjectView = value;
+              });
+            },
+          ),
         ],
       ),
+      body: _isProjectView ? _buildProjectView() : _buildTaskView(),
     );
   }
 
-  Pagination? _getPaginationByStatus(TaskStatus status) {
-    switch (status) {
-      case TaskStatus.todo:
-        return getTaskController.todoPagination.value;
-      case TaskStatus.inProgress:
-        return getTaskController.inProgressPagination.value;
-      case TaskStatus.completed:
-        return getTaskController.completedPagination.value;
-      case TaskStatus.blocked:
-        return getTaskController.blockedPagination.value;
-      default:
-        return null;
-    }
+  Widget _buildTaskView() {
+    return TaskListView(
+      tabController: _tabController,
+      controller: getTaskController,
+      todoScrollController: _todoScrollController,
+      inProgressScrollController: _inProgressScrollController,
+      completedScrollController: _completedScrollController,
+    );
   }
+
+  Widget _buildProjectView() {
+    return ProjectListView(
+      scrollController: _projectScrollController,
+      controller: getProjectController,
+    );
+  }
+
 }
