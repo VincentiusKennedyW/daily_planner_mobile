@@ -31,7 +31,7 @@ class GetTaskController extends GetxController with TaskHelpers {
       getTasksByStatus(TaskStatus.todo),
       getTasksByStatus(TaskStatus.inProgress),
       getTasksByStatus(TaskStatus.completed),
-      getTasksByStatus(TaskStatus.blocked),
+      // getTasksByStatus(TaskStatus.blocked),
     ]);
   }
 

@@ -53,11 +53,11 @@ class ProjectModel {
       endDate: json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
-      tasks: (json['tasks'] != null
+      tasks: json['tasks'] != null && (json['tasks'] as List).isNotEmpty
           ? (json['tasks'] as List)
-              .map((task) => TaskListModel.fromJson(task))
+              .map((task) => TaskListModel.fromJson(task as Map<String, dynamic>))
               .toList()
-          : null),
+          : [],
     );
   }
 

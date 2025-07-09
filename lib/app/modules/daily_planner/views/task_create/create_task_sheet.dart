@@ -17,7 +17,7 @@ import 'package:expense_tracker/core/task.dart';
 
 class CreateTaskSheet extends StatefulWidget {
   final VoidCallback? onSuccess;
-  
+
   const CreateTaskSheet({super.key, this.onSuccess});
 
   @override

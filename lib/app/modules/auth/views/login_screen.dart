@@ -1,7 +1,8 @@
-import 'package:expense_tracker/app/modules/auth/controllers/auth_controller.dart';
-import 'package:expense_tracker/global_widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'package:expense_tracker/app/modules/auth/controllers/auth_controller.dart';
+import 'package:expense_tracker/global_widgets/custom_snackbar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

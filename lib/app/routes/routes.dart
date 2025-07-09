@@ -6,6 +6,7 @@ import 'package:expense_tracker/app/modules/daily_planner/bindings/project_bindi
 import 'package:expense_tracker/app/modules/daily_planner/bindings/task_binding.dart';
 import 'package:expense_tracker/app/modules/daily_planner/bindings/user_binding.dart';
 import 'package:expense_tracker/app/modules/daily_planner/views/task_detail/task_detail_screen.dart';
+import 'package:expense_tracker/app/modules/daily_planner/views/project_detail/project_detail_screen.dart';
 import 'package:expense_tracker/app/modules/dashboard/bindings/leaderboard_binding.dart';
 import 'package:expense_tracker/app/modules/dashboard/bindings/recent_activity_binding.dart';
 import 'package:expense_tracker/app/modules/dashboard/bindings/task_assignee_binding.dart';
@@ -16,6 +17,7 @@ class AppRoutes {
   static const String login = '/login';
   static const String main = '/';
   static const String taskDetail = '/task-detail';
+  static const String projectDetail = '/project-detail';
 
   static List<GetPage> routes = [
     GetPage(
@@ -45,6 +47,16 @@ class AppRoutes {
         UserBinding(),
         TaskAssigneeBinding(),
         TaskCommentBinding(),
+      ],
+      middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: projectDetail,
+      page: () => const ProjectDetailScreen(),
+      bindings: [
+        TaskBinding(),
+        UserBinding(),
+        ProjectBinding(),
       ],
       middlewares: [AuthMiddleware()],
     ),

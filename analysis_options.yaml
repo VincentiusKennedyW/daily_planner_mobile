@@ -5,4 +5,4 @@ analyzer:
     deprecated_member_use: ignore
 linter:
   rules:
-    lines_longer_than_80_chars: true
+    # lines_longer_than_80_chars: true

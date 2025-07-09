@@ -28,10 +28,12 @@ class LeaderboardResponse {
 
 class LeaderboardData {
   final List<LeaderboardUser> leaderboard;
+  final DateFilter? dateFilter;
   final Pagination pagination;
 
   LeaderboardData({
     required this.leaderboard,
+    this.dateFilter,
     required this.pagination,
   });
 
@@ -40,6 +42,9 @@ class LeaderboardData {
       leaderboard: (json['leaderboard'] as List)
           .map((item) => LeaderboardUser.fromJson(item))
           .toList(),
+      dateFilter: json['dateFilter'] != null
+          ? DateFilter.fromJson(json['dateFilter'])
+          : null,
       pagination: Pagination.fromJson(json['pagination']),
     );
   }
@@ -47,6 +52,7 @@ class LeaderboardData {
   Map<String, dynamic> toJson() {
     return {
       'leaderboard': leaderboard.map((item) => item.toJson()).toList(),
+      'dateFilter': dateFilter?.toJson(),
       'pagination': pagination.toJson(),
     };
   }
@@ -88,6 +94,30 @@ class LeaderboardUser {
       'totalPoints': totalPoints,
       'completedTasks': completedTasks,
       'ongoingTasks': ongoingTasks,
+    };
+  }
+}
+
+class DateFilter {
+  final String startDate;
+  final String endDate;
+
+  DateFilter({
+    required this.startDate,
+    required this.endDate,
+  });
+
+  factory DateFilter.fromJson(Map<String, dynamic> json) {
+    return DateFilter(
+      startDate: json['startDate'],
+      endDate: json['endDate'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'startDate': startDate,
+      'endDate': endDate,
     };
   }
 }
