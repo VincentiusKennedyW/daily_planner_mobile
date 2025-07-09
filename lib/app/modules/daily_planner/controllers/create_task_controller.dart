@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 
+import 'package:expense_tracker/app/modules/dashboard/controllers/task_assignee_controller.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -18,6 +20,9 @@ class CreateTaskController extends GetxController {
   final Rxn<CreatedTaskModel> createdTask = Rxn<CreatedTaskModel>();
 
   final GetTaskController getTaskController = Get.find<GetTaskController>();
+  final TaskAssigneeController taskAssigneeController =
+      Get.find<TaskAssigneeController>();
+
   final String baseUrl = Config.url;
   final GetStorage _storage = GetStorage();
 
@@ -77,6 +82,34 @@ class CreateTaskController extends GetxController {
             default:
               break;
           }
+
+          if (taskAssigneeController.monthlyTaskStatistics.value != null) {
+            var currentStats =
+                taskAssigneeController.monthlyTaskStatistics.value!;
+            taskAssigneeController.monthlyTaskStatistics.value =
+                currentStats.copyWith(
+              data: currentStats.data.copyWith(
+                todo: currentStats.data.todo + 1,
+              ),
+            );
+
+            developer.log(
+              'Updated monthly task statistics: ${taskAssigneeController.monthlyTaskStatistics.value!.toJson()}',
+              name: 'CreateTaskController',
+            );
+          }
+
+          if (taskAssigneeController.totalTaskStatistics.value != null) {
+            var currentStats =
+                taskAssigneeController.totalTaskStatistics.value!;
+            taskAssigneeController.totalTaskStatistics.value =
+                currentStats.copyWith(
+              data: currentStats.data.copyWith(
+                todo: currentStats.data.todo + 1,
+              ),
+            );
+          }
+
           return true;
         } else {
           errorMessageCreate.value = taskResponse.message;

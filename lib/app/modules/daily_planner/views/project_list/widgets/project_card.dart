@@ -299,19 +299,6 @@ class ProjectCard extends StatelessWidget {
     return tasks.every((task) => task.status == TaskStatus.completed);
   }
 
-  String _getProjectDuration() {
-    if (project.startDate == null) return 'No timeline';
-
-    if (project.endDate == null) {
-      final daysSinceStart =
-          DateTime.now().difference(project.startDate!).inDays;
-      return '${daysSinceStart}d ongoing';
-    }
-
-    final duration = project.endDate!.difference(project.startDate!).inDays;
-    return '${duration}d duration';
-  }
-
   Color _getProgressColor() {
     final bool allTasksCompleted = _areAllTasksCompleted();
     final taskCount = project.tasks?.length ?? 0;

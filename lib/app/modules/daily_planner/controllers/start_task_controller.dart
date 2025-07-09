@@ -1,20 +1,24 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
-import 'package:expense_tracker/app/data/models/pagination_model.dart';
-import 'package:expense_tracker/app/data/models/responses/start_task_response.dart';
-import 'package:expense_tracker/app/modules/daily_planner/controllers/get_task_controller.dart';
-import 'package:expense_tracker/core/config.dart';
-import 'package:expense_tracker/core/task.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:expense_tracker/app/data/models/pagination_model.dart';
+import 'package:expense_tracker/app/data/models/responses/start_task_response.dart';
+import 'package:expense_tracker/app/modules/daily_planner/controllers/get_task_controller.dart';
+import 'package:expense_tracker/app/modules/dashboard/controllers/task_assignee_controller.dart';
+import 'package:expense_tracker/core/config.dart';
+import 'package:expense_tracker/core/task.dart';
 
 class StartTaskController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
 
   final GetTaskController getTaskController = Get.find<GetTaskController>();
+  final TaskAssigneeController taskAssigneeController =
+      Get.find<TaskAssigneeController>();
   final GetStorage _storage = GetStorage();
   final String baseUrl = Config.url;
 
@@ -60,6 +64,30 @@ class StartTaskController extends GetxController {
               page: inProgressPagination.page,
               totalPages: inProgressPagination.totalPages,
               total: (inProgressPagination.total ?? 0) + 1,
+            );
+          }
+
+          if (taskAssigneeController.monthlyTaskStatistics.value != null) {
+            taskAssigneeController.monthlyTaskStatistics.value =
+                taskAssigneeController.monthlyTaskStatistics.value!.copyWith(
+              data: taskAssigneeController.monthlyTaskStatistics.value!.data
+                  .copyWith(
+                inProgress: taskAssigneeController
+                        .monthlyTaskStatistics.value!.data.inProgress +
+                    1,
+              ),
+            );
+          }
+
+          if (taskAssigneeController.totalTaskStatistics.value != null) {
+            taskAssigneeController.totalTaskStatistics.value =
+                taskAssigneeController.totalTaskStatistics.value!.copyWith(
+              data: taskAssigneeController.totalTaskStatistics.value!.data
+                  .copyWith(
+                inProgress: taskAssigneeController
+                        .totalTaskStatistics.value!.data.inProgress +
+                    1,
+              ),
             );
           }
           return true;

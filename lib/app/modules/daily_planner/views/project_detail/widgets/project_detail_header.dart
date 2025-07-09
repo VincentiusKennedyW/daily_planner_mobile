@@ -202,58 +202,6 @@ class ProjectDetailHeader extends StatelessWidget {
     return tasks.every((task) => task.status == TaskStatus.completed);
   }
 
-  String _getProjectDuration() {
-    if (project.startDate == null) return 'No timeline';
-
-    if (project.endDate == null) {
-      final daysSinceStart =
-          DateTime.now().difference(project.startDate!).inDays;
-      return '${daysSinceStart}d ongoing';
-    }
-
-    final duration = project.endDate!.difference(project.startDate!).inDays;
-    return '${duration}d duration';
-  }
-
-  Color _getProgressColor() {
-    final bool allTasksCompleted = _areAllTasksCompleted();
-    final taskCount = project.tasks?.length ?? 0;
-
-    if (taskCount == 0) return Colors.grey;
-
-    if (allTasksCompleted) {
-      return Colors.green;
-    } else {
-      return Colors.blue;
-    }
-  }
-
-  IconData _getProgressIcon() {
-    final bool allTasksCompleted = _areAllTasksCompleted();
-    final taskCount = project.tasks?.length ?? 0;
-
-    if (taskCount == 0) return Icons.hourglass_empty_rounded;
-
-    if (allTasksCompleted) {
-      return Icons.check_circle_rounded;
-    } else {
-      return Icons.trending_up_rounded;
-    }
-  }
-
-  String _getProgressText() {
-    final bool allTasksCompleted = _areAllTasksCompleted();
-    final taskCount = project.tasks?.length ?? 0;
-
-    if (taskCount == 0) return 'No tasks';
-
-    if (allTasksCompleted) {
-      return 'Completed';
-    } else {
-      return 'In Progress';
-    }
-  }
-
   String _formatDate(DateTime? date) {
     if (date == null) return 'No date';
     return '${date.day}/${date.month}/${date.year}';

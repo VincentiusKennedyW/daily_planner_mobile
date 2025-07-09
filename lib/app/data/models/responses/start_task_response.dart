@@ -22,14 +22,14 @@ class StartTaskData {
   final int id;
   final DateTime startedAt;
   final DateTime? completedAt;
-  final int pointEarned;
+  final int pointsEarned;
   final SimpleTaskData task;
 
   StartTaskData({
     required this.id,
     required this.startedAt,
     this.completedAt,
-    required this.pointEarned,
+    required this.pointsEarned,
     required this.task,
   });
 
@@ -41,7 +41,7 @@ class StartTaskData {
       completedAt: json['completedAt'] != null
           ? DateTime.parse(json['completedAt'])
           : null,
-      pointEarned: json['pointEarned'] ?? 0,
+      pointsEarned: json['pointsEarned'] ?? 0,
       task: SimpleTaskData.fromJson(json['task'] ?? {}),
     );
   }

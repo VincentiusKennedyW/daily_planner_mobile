@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+
 import 'package:expense_tracker/app/data/models/task_models/task_model.dart';
 import 'package:expense_tracker/app/modules/dashboard/controllers/leaderboard_controller.dart';
 import 'package:expense_tracker/app/modules/dashboard/controllers/recent_activity_controller.dart';
 import 'package:expense_tracker/app/modules/dashboard/controllers/task_assignee_controller.dart';
 import 'package:expense_tracker/core/task.dart';
 import 'package:expense_tracker/main.dart';
-import 'package:flutter/material.dart';
-
-import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -279,15 +279,6 @@ class _DashboardScreenState extends State<DashboardScreen>
         );
       }
 
-      // Gunakan data monthly yang tepat
-      final monthlyStatistics = _taskController.monthlyTaskStatistics.value;
-
-      if (monthlyStatistics == null) {
-        return Center(
-          child: Text('Tidak ada data statistik bulan ini'),
-        );
-      }
-
       return Column(
         children: [
           Row(
@@ -295,7 +286,9 @@ class _DashboardScreenState extends State<DashboardScreen>
               Expanded(
                 child: _buildStatCard(
                   'Poin Bulan Ini',
-                  monthlyStatistics.data.totalPoints.toString(),
+                  _taskController.monthlyTaskStatistics.value?.data.totalPoints
+                          .toString() ??
+                      '0',
                   Icons.stars_rounded,
                   Color(0xFFF59E0B),
                   'Poin yang didapat bulan ini',
@@ -305,7 +298,9 @@ class _DashboardScreenState extends State<DashboardScreen>
               Expanded(
                 child: _buildStatCard(
                   'Task Bulan Ini',
-                  monthlyStatistics.data.total.toString(),
+                  _taskController.monthlyTaskStatistics.value?.data.total
+                          .toString() ??
+                      '0',
                   Icons.assignment_rounded,
                   Color(0xFF3B82F6),
                   'Task yang dibuat bulan ini',
@@ -319,7 +314,9 @@ class _DashboardScreenState extends State<DashboardScreen>
               Expanded(
                 child: _buildStatCard(
                   'Selesai',
-                  monthlyStatistics.data.completed.toString(),
+                  _taskController.monthlyTaskStatistics.value?.data.completed
+                          .toString() ??
+                      '0',
                   Icons.check_circle_rounded,
                   Color(0xFF10B981),
                   'Task selesai bulan ini',
@@ -329,7 +326,9 @@ class _DashboardScreenState extends State<DashboardScreen>
               Expanded(
                 child: _buildStatCard(
                   'Progress',
-                  monthlyStatistics.data.inProgress.toString(),
+                  _taskController.monthlyTaskStatistics.value?.data.inProgress
+                          .toString() ??
+                      '0',
                   Icons.schedule_rounded,
                   Color(0xFFEF4444),
                   'Sedang dikerjakan',
@@ -375,15 +374,6 @@ class _DashboardScreenState extends State<DashboardScreen>
         );
       }
 
-      // Gunakan data total yang tepat
-      final totalStatistics = _taskController.totalTaskStatistics.value;
-
-      if (totalStatistics == null) {
-        return Center(
-          child: Text('Tidak ada data statistik total'),
-        );
-      }
-
       return Column(
         children: [
           Row(
@@ -391,7 +381,9 @@ class _DashboardScreenState extends State<DashboardScreen>
               Expanded(
                 child: _buildStatCard(
                   'Total Poin',
-                  totalStatistics.data.totalPoints.toString(),
+                  _taskController.totalTaskStatistics.value?.data.totalPoints
+                          .toString() ??
+                      '0',
                   Icons.stars_rounded,
                   Color(0xFFF59E0B),
                   'Total poin yang didapat',
@@ -401,7 +393,9 @@ class _DashboardScreenState extends State<DashboardScreen>
               Expanded(
                 child: _buildStatCard(
                   'Total Task',
-                  totalStatistics.data.total.toString(),
+                  _taskController.totalTaskStatistics.value?.data.total
+                          .toString() ??
+                      '0',
                   Icons.assignment_rounded,
                   Color(0xFF3B82F6),
                   'Total semua task',
@@ -415,7 +409,9 @@ class _DashboardScreenState extends State<DashboardScreen>
               Expanded(
                 child: _buildStatCard(
                   'Total Selesai',
-                  totalStatistics.data.completed.toString(),
+                  _taskController.totalTaskStatistics.value?.data.completed
+                          .toString() ??
+                      '0',
                   Icons.check_circle_rounded,
                   Color(0xFF10B981),
                   'Total task yang selesai',
@@ -425,7 +421,9 @@ class _DashboardScreenState extends State<DashboardScreen>
               Expanded(
                 child: _buildStatCard(
                   'Total Progress',
-                  totalStatistics.data.inProgress.toString(),
+                  _taskController.totalTaskStatistics.value?.data.inProgress
+                          .toString() ??
+                      '0',
                   Icons.schedule_rounded,
                   Color(0xFFEF4444),
                   'Total sedang dikerjakan',
@@ -438,13 +436,6 @@ class _DashboardScreenState extends State<DashboardScreen>
     });
   }
 
-  // ElevatedButton(
-  //   onPressed: AuthController.instance.logout,
-  //   child: Text('Logout'),
-  //   style: ElevatedButton.styleFrom(
-  //     backgroundColor: Colors.red,
-  //   ),
-  // ),
   Widget _buildStatCard(
       String title, String value, IconData icon, Color color, String subtitle) {
     return Container(

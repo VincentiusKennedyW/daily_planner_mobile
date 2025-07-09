@@ -13,6 +13,18 @@ class TaskAssigneeResponse {
     required this.data,
   });
 
+  TaskAssigneeResponse copyWith({
+    String? status,
+    String? message,
+    TaskAssigneeData? data,
+  }) {
+    return TaskAssigneeResponse(
+      status: status ?? this.status,
+      message: message ?? this.message,
+      data: data ?? this.data,
+    );
+  }
+
   factory TaskAssigneeResponse.fromJson(Map<String, dynamic> json) {
     return TaskAssigneeResponse(
       status: json['status'],
@@ -55,6 +67,32 @@ class TaskAssigneeData {
     required this.byPriority,
   });
 
+  TaskAssigneeData copyWith({
+    UserWithEmail? user,
+    int? total,
+    int? completed,
+    int? inProgress,
+    int? todo,
+    int? overdue,
+    int? totalPoints,
+    Period? period,
+    TaskCategory? byCategory,
+    TaskPriority? byPriority,
+  }) {
+    return TaskAssigneeData(
+      user: user ?? this.user,
+      total: total ?? this.total,
+      completed: completed ?? this.completed,
+      inProgress: inProgress ?? this.inProgress,
+      todo: todo ?? this.todo,
+      overdue: overdue ?? this.overdue,
+      totalPoints: totalPoints ?? this.totalPoints,
+      period: period ?? this.period,
+      byCategory: byCategory ?? this.byCategory,
+      byPriority: byPriority ?? this.byPriority,
+    );
+  }
+
   factory TaskAssigneeData.fromJson(Map<String, dynamic> json) {
     return TaskAssigneeData(
       user: UserWithEmail.fromJson(json['user']),
@@ -85,4 +123,3 @@ class TaskAssigneeData {
     };
   }
 }
-
