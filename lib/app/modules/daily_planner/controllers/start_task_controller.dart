@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:expense_tracker/app/modules/dashboard/controllers/leaderboard_controller.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -19,6 +20,8 @@ class StartTaskController extends GetxController {
   final GetTaskController getTaskController = Get.find<GetTaskController>();
   final TaskAssigneeController taskAssigneeController =
       Get.find<TaskAssigneeController>();
+  final LeaderboardController leaderboardController =
+      Get.find<LeaderboardController>();
   final GetStorage _storage = GetStorage();
   final String baseUrl = Config.url;
 
@@ -90,6 +93,26 @@ class StartTaskController extends GetxController {
               ),
             );
           }
+
+          if (leaderboardController.leaderboard.isNotEmpty &&
+              responseData.data.assignee != null) {
+            final assigneeIds = responseData.data.assignee!
+                .map((assignee) => assignee.id)
+                .toList();
+
+            final updatedLeaderboard =
+                leaderboardController.leaderboard.map((user) {
+              if (assigneeIds.contains(user.id)) {
+                return user.copyWith(
+                  ongoingTasks: user.ongoingTasks + 1,
+                );
+              }
+              return user;
+            }).toList();
+
+            leaderboardController.leaderboard.value = updatedLeaderboard;
+          }
+
           return true;
         } else {
           errorMessage.value = responseData.message;

@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:developer' as developer;
 
+import 'package:expense_tracker/app/modules/dashboard/controllers/leaderboard_controller.dart';
 import 'package:expense_tracker/app/modules/dashboard/controllers/task_assignee_controller.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -20,6 +20,8 @@ class CreateTaskController extends GetxController {
   final Rxn<CreatedTaskModel> createdTask = Rxn<CreatedTaskModel>();
 
   final GetTaskController getTaskController = Get.find<GetTaskController>();
+  final LeaderboardController leaderboardController =
+      Get.find<LeaderboardController>();
   final TaskAssigneeController taskAssigneeController =
       Get.find<TaskAssigneeController>();
 
@@ -90,12 +92,8 @@ class CreateTaskController extends GetxController {
                 currentStats.copyWith(
               data: currentStats.data.copyWith(
                 todo: currentStats.data.todo + 1,
+                total: currentStats.data.total + 1,
               ),
-            );
-
-            developer.log(
-              'Updated monthly task statistics: ${taskAssigneeController.monthlyTaskStatistics.value!.toJson()}',
-              name: 'CreateTaskController',
             );
           }
 
@@ -106,6 +104,7 @@ class CreateTaskController extends GetxController {
                 currentStats.copyWith(
               data: currentStats.data.copyWith(
                 todo: currentStats.data.todo + 1,
+                total: currentStats.data.total + 1,
               ),
             );
           }

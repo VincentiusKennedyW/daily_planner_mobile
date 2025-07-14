@@ -14,7 +14,8 @@ class ProjectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color projectColor = _getProjectStatusColor(project.endDate);
+    final Color projectColor =
+        _getProjectStatusColor(project.startDate, project.endDate);
     final int taskCount = project.tasks?.length ?? 0;
 
     return Container(
@@ -254,20 +255,25 @@ class ProjectCard extends StatelessWidget {
     );
   }
 
-  Color _getProjectStatusColor(DateTime? endDate) {
-    final bool allTasksCompleted = _areAllTasksCompleted();
+  Color _getProjectStatusColor(DateTime? startDate, DateTime? endDate) {
+    // final bool allTasksCompleted = _areAllTasksCompleted();
+    final now = DateTime.now();
 
-    if (endDate == null) {
-      return allTasksCompleted ? Colors.green : Colors.blue;
+    // if (allTasksCompleted) {
+    //   return 'Completed';
+    // }
+
+    if ((startDate != null && startDate.isAfter(now)) ||
+        startDate == null && endDate == null) {
+      return Colors.purple;
     }
 
-    final now = DateTime.now();
-    if (allTasksCompleted) {
-      return Colors.green;
+    if (endDate == null) {
+      return Colors.blue;
     } else if (endDate.isBefore(now)) {
       return Colors.red;
     } else {
-      return Colors.orange;
+      return Colors.green;
     }
   }
 
@@ -275,18 +281,15 @@ class ProjectCard extends StatelessWidget {
     final bool allTasksCompleted = _areAllTasksCompleted();
     final now = DateTime.now();
 
-    if (allTasksCompleted) {
-      return 'Completed';
-    }
-
-    if (startDate != null && startDate.isAfter(now)) {
+    if ((startDate != null && startDate.isAfter(now)) ||
+        startDate == null && endDate == null) {
       return 'Upcoming';
-    }
-
-    if (endDate == null) {
-      return 'Ongoing';
+    } else if (endDate == null) {
+      return 'In Progress';
     } else if (endDate.isBefore(now)) {
       return 'Overdue';
+    } else if (startDate != null && allTasksCompleted) {
+      return 'Completed';
     } else {
       return 'Active';
     }

@@ -28,7 +28,7 @@ class LeaderboardResponse {
 
 class LeaderboardData {
   final List<LeaderboardUser> leaderboard;
-  final DateFilter? dateFilter;
+  final DateTime? dateFilter;
   final Pagination pagination;
 
   LeaderboardData({
@@ -42,9 +42,8 @@ class LeaderboardData {
       leaderboard: (json['leaderboard'] as List)
           .map((item) => LeaderboardUser.fromJson(item))
           .toList(),
-      dateFilter: json['dateFilter'] != null
-          ? DateFilter.fromJson(json['dateFilter'])
-          : null,
+      dateFilter:
+          json['filter'] != null ? DateTime.parse(json['filter']) : null,
       pagination: Pagination.fromJson(json['pagination']),
     );
   }
@@ -52,7 +51,7 @@ class LeaderboardData {
   Map<String, dynamic> toJson() {
     return {
       'leaderboard': leaderboard.map((item) => item.toJson()).toList(),
-      'dateFilter': dateFilter?.toJson(),
+      'dateFilter': dateFilter?.toIso8601String(),
       'pagination': pagination.toJson(),
     };
   }
@@ -65,6 +64,7 @@ class LeaderboardUser {
   final int totalPoints;
   final int completedTasks;
   final int ongoingTasks;
+  final List<ChartData>? chartData;
 
   LeaderboardUser({
     required this.id,
@@ -73,7 +73,28 @@ class LeaderboardUser {
     required this.totalPoints,
     required this.completedTasks,
     required this.ongoingTasks,
+    this.chartData,
   });
+
+  LeaderboardUser copyWith({
+    int? id,
+    String? name,
+    String? email,
+    int? totalPoints,
+    int? completedTasks,
+    int? ongoingTasks,
+    List<ChartData>? chartData,
+  }) {
+    return LeaderboardUser(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      totalPoints: totalPoints ?? this.totalPoints,
+      completedTasks: completedTasks ?? this.completedTasks,
+      ongoingTasks: ongoingTasks ?? this.ongoingTasks,
+      chartData: chartData ?? this.chartData,
+    );
+  }
 
   factory LeaderboardUser.fromJson(Map<String, dynamic> json) {
     return LeaderboardUser(
@@ -83,6 +104,9 @@ class LeaderboardUser {
       totalPoints: json['totalPoints'],
       completedTasks: json['completedTasks'],
       ongoingTasks: json['ongoingTasks'],
+      chartData: (json['chartData'] as List<dynamic>?)
+          ?.map((item) => ChartData.fromJson(item as Map<String, dynamic>))
+          .toList(),
     );
   }
 
@@ -94,30 +118,48 @@ class LeaderboardUser {
       'totalPoints': totalPoints,
       'completedTasks': completedTasks,
       'ongoingTasks': ongoingTasks,
+      'chartData': chartData,
     };
   }
 }
 
-class DateFilter {
-  final String startDate;
-  final String endDate;
+class ChartData {
+  final String date;
+  final int points;
 
-  DateFilter({
-    required this.startDate,
-    required this.endDate,
+  ChartData({
+    required this.date,
+    required this.points,
   });
 
-  factory DateFilter.fromJson(Map<String, dynamic> json) {
-    return DateFilter(
-      startDate: json['startDate'],
-      endDate: json['endDate'],
+  factory ChartData.fromJson(Map<String, dynamic> json) {
+    return ChartData(
+      date: json['date'] ?? '',
+      points: json['points'] ?? 0,
+    );
+  }
+}
+
+class ChartPoint {
+  final String date;
+  final int points;
+
+  ChartPoint({
+    required this.date,
+    required this.points,
+  });
+
+  factory ChartPoint.fromJson(Map<String, dynamic> json) {
+    return ChartPoint(
+      date: json['date'],
+      points: json['points'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'startDate': startDate,
-      'endDate': endDate,
+      'date': date,
+      'points': points,
     };
   }
 }

@@ -23,6 +23,7 @@ class StartTaskData {
   final DateTime startedAt;
   final DateTime? completedAt;
   final int pointsEarned;
+  final List<AssignedAssigneeData>? assignee;
   final SimpleTaskData task;
 
   StartTaskData({
@@ -30,6 +31,7 @@ class StartTaskData {
     required this.startedAt,
     this.completedAt,
     required this.pointsEarned,
+    required this.assignee,
     required this.task,
   });
 
@@ -42,7 +44,27 @@ class StartTaskData {
           ? DateTime.parse(json['completedAt'])
           : null,
       pointsEarned: json['pointsEarned'] ?? 0,
+      assignee: (json['assignee'] as List?)
+          ?.map((item) => AssignedAssigneeData.fromJson(item))
+          .toList(),
       task: SimpleTaskData.fromJson(json['task'] ?? {}),
+    );
+  }
+}
+
+class AssignedAssigneeData {
+  final int id;
+  final String name;
+
+  AssignedAssigneeData({
+    required this.id,
+    required this.name,
+  });
+
+  factory AssignedAssigneeData.fromJson(Map<String, dynamic> json) {
+    return AssignedAssigneeData(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
     );
   }
 }

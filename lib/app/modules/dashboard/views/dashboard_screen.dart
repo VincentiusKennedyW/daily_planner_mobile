@@ -302,7 +302,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                           .toString() ??
                       '0',
                   Icons.assignment_rounded,
-                  Color(0xFF3B82F6),
+                  Color(0xFF8B5CF6),
                   'Task yang dibuat bulan ini',
                 ),
               ),
@@ -330,7 +330,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                           .toString() ??
                       '0',
                   Icons.schedule_rounded,
-                  Color(0xFFEF4444),
+                  Color(0xFF3B82F6),
                   'Sedang dikerjakan',
                 ),
               ),
@@ -397,7 +397,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                           .toString() ??
                       '0',
                   Icons.assignment_rounded,
-                  Color(0xFF3B82F6),
+                  Color(0xFF8B5CF6),
                   'Total semua task',
                 ),
               ),
@@ -425,7 +425,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                           .toString() ??
                       '0',
                   Icons.schedule_rounded,
-                  Color(0xFFEF4444),
+                  Color(0xFF3B82F6),
                   'Total sedang dikerjakan',
                 ),
               ),

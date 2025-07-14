@@ -119,11 +119,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       label: 'Analytics',
       screen: AnalyticsScreen(),
     ),
-    NavigationItem(
-      icon: Icons.group_rounded,
-      label: 'Team',
-      screen: TeamScreen(),
-    ),
+    // NavigationItem(
+    //   icon: Icons.group_rounded,
+    //   label: 'Team',
+    //   screen: TeamScreen(),
+    // ),
     NavigationItem(
       icon: Icons.person_rounded,
       label: 'Profile',

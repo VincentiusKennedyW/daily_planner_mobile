@@ -1,14 +1,16 @@
 import 'dart:convert';
 
-import 'package:expense_tracker/app/data/models/pagination_model.dart';
-import 'package:expense_tracker/app/data/models/responses/start_task_response.dart';
-import 'package:expense_tracker/app/modules/daily_planner/controllers/get_task_controller.dart';
-import 'package:expense_tracker/app/modules/dashboard/controllers/task_assignee_controller.dart';
-import 'package:expense_tracker/core/config.dart';
-import 'package:expense_tracker/core/task.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:expense_tracker/app/data/models/pagination_model.dart';
+import 'package:expense_tracker/app/data/models/responses/start_task_response.dart';
+import 'package:expense_tracker/app/modules/daily_planner/controllers/get_task_controller.dart';
+import 'package:expense_tracker/app/modules/dashboard/controllers/leaderboard_controller.dart';
+import 'package:expense_tracker/app/modules/dashboard/controllers/task_assignee_controller.dart';
+import 'package:expense_tracker/core/config.dart';
+import 'package:expense_tracker/core/task.dart';
 
 class CompleteTaskController extends GetxController {
   final RxBool isLoading = false.obs;
@@ -17,6 +19,8 @@ class CompleteTaskController extends GetxController {
   final GetTaskController getTaskController = Get.find<GetTaskController>();
   final TaskAssigneeController taskAssigneeController =
       Get.find<TaskAssigneeController>();
+  final LeaderboardController leaderboardController =
+      Get.find<LeaderboardController>();
   final GetStorage _storage = GetStorage();
   final String baseUrl = Config.url;
 
@@ -76,6 +80,9 @@ class CompleteTaskController extends GetxController {
                 completed: taskAssigneeController
                         .monthlyTaskStatistics.value!.data.completed +
                     1,
+                total: taskAssigneeController
+                        .monthlyTaskStatistics.value!.data.total +
+                    1,
                 totalPoints: taskAssigneeController
                         .monthlyTaskStatistics.value!.data.totalPoints +
                     responseData.data.pointsEarned,
@@ -94,11 +101,36 @@ class CompleteTaskController extends GetxController {
                 completed: taskAssigneeController
                         .totalTaskStatistics.value!.data.completed +
                     1,
+                total: taskAssigneeController
+                        .totalTaskStatistics.value!.data.total +
+                    1,
                 totalPoints: taskAssigneeController
                         .totalTaskStatistics.value!.data.totalPoints +
                     responseData.data.pointsEarned,
               ),
             );
+          }
+
+          if (leaderboardController.leaderboard.isNotEmpty &&
+              responseData.data.assignee != null) {
+            final assigneeIds = responseData.data.assignee!
+                .map((assignee) => assignee.id)
+                .toList();
+
+            final updatedLeaderboard =
+                leaderboardController.leaderboard.map((user) {
+              if (assigneeIds.contains(user.id)) {
+                return user.copyWith(
+                  totalPoints:
+                      user.totalPoints + responseData.data.pointsEarned,
+                  completedTasks: user.completedTasks + 1,
+                  ongoingTasks: user.ongoingTasks - 1,
+                );
+              }
+              return user;
+            }).toList();
+
+            leaderboardController.leaderboard.value = updatedLeaderboard;
           }
 
           return true;

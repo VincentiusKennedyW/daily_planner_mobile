@@ -34,8 +34,8 @@ class ProjectDetailHeader extends StatelessWidget {
             children: [
               Obx(() {
                 final currentProject = controller.project.value;
-                final Color projectColor =
-                    _getProjectStatusColor(currentProject.endDate);
+                final Color projectColor = _getProjectStatusColor(
+                    currentProject.startDate, currentProject.endDate);
 
                 return Row(
                   children: [
@@ -91,13 +91,12 @@ class ProjectDetailHeader extends StatelessWidget {
                   ],
                 );
               }),
-              const SizedBox(height: 16),
               Obx(() {
                 final currentProject = controller.project.value;
-                final Color projectColor =
-                    _getProjectStatusColor(currentProject.endDate);
+                final Color projectColor = _getProjectStatusColor(
+                    currentProject.startDate, currentProject.endDate);
                 if (project.startDate != null || project.endDate != null) {
-                  _buildDateSection(projectColor);
+                  return _buildDateSection(projectColor);
                 }
                 return const SizedBox.shrink();
               })
@@ -110,6 +109,7 @@ class ProjectDetailHeader extends StatelessWidget {
 
   Widget _buildDateSection(Color projectColor) {
     return Container(
+      margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.grey[50],
@@ -157,20 +157,25 @@ class ProjectDetailHeader extends StatelessWidget {
     );
   }
 
-  Color _getProjectStatusColor(DateTime? endDate) {
-    final bool allTasksCompleted = _areAllTasksCompleted();
+  Color _getProjectStatusColor(DateTime? startDate, DateTime? endDate) {
+    // final bool allTasksCompleted = _areAllTasksCompleted();
+    final now = DateTime.now();
 
-    if (endDate == null) {
-      return allTasksCompleted ? Colors.green : Colors.blue;
+    // if (allTasksCompleted) {
+    //   return 'Completed';
+    // }
+
+    if ((startDate != null && startDate.isAfter(now)) ||
+        startDate == null && endDate == null) {
+      return Colors.purple;
     }
 
-    final now = DateTime.now();
-    if (allTasksCompleted) {
-      return Colors.green;
+    if (endDate == null) {
+      return Colors.blue;
     } else if (endDate.isBefore(now)) {
       return Colors.red;
     } else {
-      return Colors.orange;
+      return Colors.green;
     }
   }
 
@@ -178,18 +183,15 @@ class ProjectDetailHeader extends StatelessWidget {
     final bool allTasksCompleted = _areAllTasksCompleted();
     final now = DateTime.now();
 
-    if (allTasksCompleted) {
-      return 'Completed';
-    }
-
-    if (startDate != null && startDate.isAfter(now)) {
+    if ((startDate != null && startDate.isAfter(now)) ||
+        startDate == null && endDate == null) {
       return 'Upcoming';
-    }
-
-    if (endDate == null) {
-      return 'Ongoing';
+    } else if (endDate == null) {
+      return 'In Progress';
     } else if (endDate.isBefore(now)) {
       return 'Overdue';
+    } else if (startDate != null && allTasksCompleted) {
+      return 'Completed';
     } else {
       return 'Active';
     }
