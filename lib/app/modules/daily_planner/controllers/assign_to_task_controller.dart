@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:expense_tracker/app/data/models/user_model.dart';
+import 'package:expense_tracker/app/modules/dashboard/controllers/task_assignee_controller.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
@@ -13,6 +14,8 @@ class AssignToTaskController extends GetxController {
   final RxString errorMessage = ''.obs;
 
   final GetTaskController getTaskController = Get.find<GetTaskController>();
+  final TaskAssigneeController taskAssigneeController =
+      Get.find<TaskAssigneeController>();
   final GetStorage _storage = GetStorage();
   final String baseUrl = Config.url;
 
@@ -43,7 +46,37 @@ class AssignToTaskController extends GetxController {
       _updateTaskAssigneeWithCopyWith(taskId, userData, isAssigning: true);
 
       if (response.statusCode == 200) {
-        return true;
+        final responseData = json.decode(response.body);
+        if (responseData['status'] == 'success') {
+          if (taskAssigneeController.monthlyTaskStatistics.value != null) {
+            taskAssigneeController.monthlyTaskStatistics.value =
+                taskAssigneeController.monthlyTaskStatistics.value!.copyWith(
+              data: taskAssigneeController.monthlyTaskStatistics.value!.data
+                  .copyWith(
+                total: taskAssigneeController
+                        .monthlyTaskStatistics.value!.data.total +
+                    1,
+              ),
+            );
+          }
+
+          if (taskAssigneeController.totalTaskStatistics.value != null) {
+            taskAssigneeController.totalTaskStatistics.value =
+                taskAssigneeController.totalTaskStatistics.value!.copyWith(
+              data: taskAssigneeController.totalTaskStatistics.value!.data
+                  .copyWith(
+                total: taskAssigneeController
+                        .totalTaskStatistics.value!.data.total +
+                    1,
+              ),
+            );
+          }
+          return true;
+        } else {
+          errorMessage.value =
+              responseData['message'] ?? 'Failed to assign task';
+          return false;
+        }
       } else {
         _updateTaskAssigneeWithCopyWith(taskId, userData, isAssigning: false);
 

@@ -86,27 +86,39 @@ class CreateTaskController extends GetxController {
           }
 
           if (taskAssigneeController.monthlyTaskStatistics.value != null) {
+            final assigneeIds = taskResponse.data.assignees!
+                .map((assignee) => assignee.id)
+                .toList();
+
             var currentStats =
                 taskAssigneeController.monthlyTaskStatistics.value!;
-            taskAssigneeController.monthlyTaskStatistics.value =
-                currentStats.copyWith(
-              data: currentStats.data.copyWith(
-                todo: currentStats.data.todo + 1,
-                total: currentStats.data.total + 1,
-              ),
-            );
+            if (assigneeIds.contains(currentStats.data.user.id)) {
+              taskAssigneeController.monthlyTaskStatistics.value =
+                  currentStats.copyWith(
+                data: currentStats.data.copyWith(
+                  todo: currentStats.data.todo + 1,
+                  total: currentStats.data.total + 1,
+                ),
+              );
+            }
           }
 
           if (taskAssigneeController.totalTaskStatistics.value != null) {
+            final assigneeIds = taskResponse.data.assignees!
+                .map((assignee) => assignee.id)
+                .toList();
+
             var currentStats =
                 taskAssigneeController.totalTaskStatistics.value!;
-            taskAssigneeController.totalTaskStatistics.value =
-                currentStats.copyWith(
-              data: currentStats.data.copyWith(
-                todo: currentStats.data.todo + 1,
-                total: currentStats.data.total + 1,
-              ),
-            );
+            if (assigneeIds.contains(currentStats.data.user.id)) {
+              taskAssigneeController.totalTaskStatistics.value =
+                  currentStats.copyWith(
+                data: currentStats.data.copyWith(
+                  todo: currentStats.data.todo + 1,
+                  total: currentStats.data.total + 1,
+                ),
+              );
+            }
           }
 
           return true;

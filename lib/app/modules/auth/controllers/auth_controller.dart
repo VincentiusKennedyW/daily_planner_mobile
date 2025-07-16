@@ -102,4 +102,38 @@ class AuthController extends GetxController {
   }
 
   bool get isAuthenticated => getToken() != null;
+
+  UserModel? getCurrentUserData() {
+    final userData = _storage.read('user_data');
+    if (userData != null) {
+      try {
+        final userMap = userData is String ? jsonDecode(userData) : userData;
+        return UserModel.fromJson(userMap);
+      } catch (e) {
+        print('Error parsing user_data: $e');
+        return null;
+      }
+    }
+    return null;
+  }
+
+  String? getUserName() {
+    return getCurrentUserData()?.name;
+  }
+
+  String? getUserEmail() {
+    return getCurrentUserData()?.email;
+  }
+
+  String? getUserDepartment() {
+    return getCurrentUserData()?.departmentName;
+  }
+
+  String? getUserRole() {
+    return getCurrentUserData()?.role;
+  }
+
+  String? getUserPhone() {
+    return getCurrentUserData()?.phone;
+  }
 }

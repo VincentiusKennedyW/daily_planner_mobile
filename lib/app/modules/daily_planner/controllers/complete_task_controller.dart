@@ -80,9 +80,9 @@ class CompleteTaskController extends GetxController {
                 completed: taskAssigneeController
                         .monthlyTaskStatistics.value!.data.completed +
                     1,
-                total: taskAssigneeController
-                        .monthlyTaskStatistics.value!.data.total +
-                    1,
+                // total: taskAssigneeController
+                //         .monthlyTaskStatistics.value!.data.total +
+                //     1,
                 totalPoints: taskAssigneeController
                         .monthlyTaskStatistics.value!.data.totalPoints +
                     responseData.data.pointsEarned,
@@ -101,9 +101,9 @@ class CompleteTaskController extends GetxController {
                 completed: taskAssigneeController
                         .totalTaskStatistics.value!.data.completed +
                     1,
-                total: taskAssigneeController
-                        .totalTaskStatistics.value!.data.total +
-                    1,
+                // total: taskAssigneeController
+                //         .totalTaskStatistics.value!.data.total +
+                //     1,
                 totalPoints: taskAssigneeController
                         .totalTaskStatistics.value!.data.totalPoints +
                     responseData.data.pointsEarned,

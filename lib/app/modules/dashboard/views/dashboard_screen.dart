@@ -1,16 +1,12 @@
-import 'dart:convert';
-import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 
 import 'package:expense_tracker/app/data/models/task_models/task_model.dart';
+import 'package:expense_tracker/app/modules/auth/controllers/auth_controller.dart';
 import 'package:expense_tracker/app/modules/dashboard/controllers/leaderboard_controller.dart';
 import 'package:expense_tracker/app/modules/dashboard/controllers/recent_activity_controller.dart';
 import 'package:expense_tracker/app/modules/dashboard/controllers/task_assignee_controller.dart';
 import 'package:expense_tracker/core/task.dart';
-import 'package:expense_tracker/main.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -31,8 +27,7 @@ class _DashboardScreenState extends State<DashboardScreen>
       Get.find<LeaderboardController>();
   final RecentActivityController _recentActivityController =
       Get.find<RecentActivityController>();
-
-  final GetStorage _storage = GetStorage();
+  final AuthController _authController = Get.find<AuthController>();
 
   @override
   void initState() {
@@ -58,191 +53,188 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   @override
   Widget build(BuildContext context) {
-    final userData = _storage.read('user_data');
-
-    String? userName;
-    if (userData != null) {
-      try {
-        final userMap = userData is String ? json.decode(userData) : userData;
-        userName = userMap['name'];
-      } catch (e) {
-        developer.log(
-          'Error parsing user_data: $e',
-          name: 'TaskAssigneeController',
-        );
-      }
-    }
+    // Sekarang bisa mudah ambil data user
+    final userName = _authController.getUserName();
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 200,
-            floating: false,
-            pinned: true,
-            backgroundColor: Color(0xFF6366F1),
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF6366F1),
-                      Color(0xFF8B5CF6),
-                    ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await _taskController.getMonthlyTaskStatistics();
+          await _taskController.getTotalTaskStatistics();
+          await _leaderboardController.getLeaderboard();
+        },
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 200,
+              floating: false,
+              pinned: true,
+              backgroundColor: Color(0xFF6366F1),
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFF6366F1),
+                        Color(0xFF8B5CF6),
+                      ],
+                    ),
+                  ),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 20),
+                          FadeTransition(
+                            opacity: _fadeAnimation,
+                            child: Text(
+                              'Selamat ${_getGreeting()},',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          FadeTransition(
+                            opacity: _fadeAnimation,
+                            child: Text(
+                              userName ?? "Tidak ada data",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          FadeTransition(
+                            opacity: _fadeAnimation,
+                            child: Text(
+                              _authController.getUserDepartment() ??
+                                  "Departemen tidak tersedia",
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 20),
-                        FadeTransition(
-                          opacity: _fadeAnimation,
+              ),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.all(20),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: TabBar(
+                      controller: _tabController,
+                      labelColor: Colors.white,
+                      unselectedLabelColor: Colors.grey[600],
+                      indicator: BoxDecoration(
+                        color: Color(0xFF6366F1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      dividerColor: Colors.transparent,
+                      tabs: [
+                        Tab(
                           child: Text(
-                            'Selamat ${_getGreeting()},',
+                            'Bulan Ini',
                             style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
                             ),
                           ),
                         ),
-                        SizedBox(height: 4),
-                        FadeTransition(
-                          opacity: _fadeAnimation,
+                        Tab(
                           child: Text(
-                            userName ?? "Tidak ada data",
+                            'Total',
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        FadeTransition(
-                          opacity: _fadeAnimation,
-                          child: Text(
-                            TaskManager.users[TaskManager.currentUser]!.role,
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
+                  SizedBox(height: 20),
+
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    constraints: BoxConstraints(
+                      minHeight: 300, // Minimum height
+                      maxHeight: 450, // Maximum height
+                    ),
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        // Tab Bulan Ini
+                        _buildMonthlyStatistics(),
+                        // Tab Total
+                        _buildTotalStatistics(),
+                      ],
+                    ),
+                  ),
+
+                  Text(
+                    'Aktivitas Terbaru',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Obx(() {
+                    final recentList =
+                        _recentActivityController.recentActivities;
+
+                    if (_recentActivityController.isLoading.value) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+
+                    if (recentList.isEmpty) {
+                      return Text("Belum ada aktivitas terbaru.");
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 16),
+                        ...recentList
+                            .take(3)
+                            .map((task) => _buildActivityItem(task)),
+                        SizedBox(height: 16),
+                      ],
+                    );
+                  }),
+                  Text(
+                    'Produktivitas Tim',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  // Masih pakai data statis untuk produktivitas tim
+                  _buildTeamProductivityChart(),
+                ]),
               ),
             ),
-          ),
-          SliverPadding(
-            padding: EdgeInsets.all(20),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: TabBar(
-                    controller: _tabController,
-                    labelColor: Colors.white,
-                    unselectedLabelColor: Colors.grey[600],
-                    indicator: BoxDecoration(
-                      color: Color(0xFF6366F1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    dividerColor: Colors.transparent,
-                    tabs: [
-                      Tab(
-                        child: Text(
-                          'Bulan Ini',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                      Tab(
-                        child: Text(
-                          'Total',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  constraints: BoxConstraints(
-                    minHeight: 300, // Minimum height
-                    maxHeight: 450, // Maximum height
-                  ),
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      // Tab Bulan Ini
-                      _buildMonthlyStatistics(),
-                      // Tab Total
-                      _buildTotalStatistics(),
-                    ],
-                  ),
-                ),
-
-                Text(
-                  'Aktivitas Terbaru',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Obx(() {
-                  final recentList = _recentActivityController.recentActivities;
-
-                  if (_recentActivityController.isLoading.value) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-
-                  if (recentList.isEmpty) {
-                    return Text("Belum ada aktivitas terbaru.");
-                  }
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 16),
-                      ...recentList
-                          .take(3)
-                          .map((task) => _buildActivityItem(task)),
-                      SizedBox(height: 16),
-                    ],
-                  );
-                }),
-                Text(
-                  'Produktivitas Tim',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 16),
-                // Masih pakai data statis untuk produktivitas tim
-                _buildTeamProductivityChart(),
-              ]),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -606,11 +598,14 @@ class _DashboardScreenState extends State<DashboardScreen>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              user.name,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
+                            Flexible(
+                              child: Text(
+                                user.name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             Text(

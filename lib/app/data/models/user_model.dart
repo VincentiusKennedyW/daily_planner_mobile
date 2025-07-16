@@ -2,19 +2,39 @@ class UserModel {
   final int? id;
   final String? name;
   final String? email;
-  // final String? password;
-  final String? nip;
-  final String? nik;
   final String? phone;
+  final int? externalId;
+  final int? isNew;
+  final String? emailVerifiedAt;
+  final String? kontak;
+  final String? signFile;
+  final String? fotoFile;
+  final int? status;
+  final String? expiredDate;
+  final String? departmentName;
+  final String? divisionName;
+  final String? teamName;
+  final String? role;
+  final String? fcmToken;
 
   UserModel({
     this.id,
     this.name,
     this.email,
-    // this.password,
-    this.nip,
-    this.nik,
     this.phone,
+    this.externalId,
+    this.isNew,
+    this.emailVerifiedAt,
+    this.kontak,
+    this.signFile,
+    this.fotoFile,
+    this.status,
+    this.expiredDate,
+    this.departmentName,
+    this.divisionName,
+    this.teamName,
+    this.role,
+    this.fcmToken,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -22,10 +42,20 @@ class UserModel {
       id: json['id'],
       name: json['name'],
       email: json['email'],
-      // password: json['password'],
-      nip: json['nip'],
-      nik: json['nik'],
       phone: json['phone'],
+      externalId: json['externalId'],
+      isNew: json['isNew'],
+      emailVerifiedAt: json['emailVerifiedAt'],
+      kontak: json['kontak'],
+      signFile: json['signFile'],
+      fotoFile: json['fotoFile'],
+      status: json['status'],
+      expiredDate: json['expiredDate'],
+      departmentName: json['departmentName'],
+      divisionName: json['divisionName'],
+      teamName: json['teamName'],
+      role: json['role'],
+      fcmToken: json['fcmToken'],
     );
   }
 
@@ -34,10 +64,20 @@ class UserModel {
       'id': id,
       'name': name,
       'email': email,
-      // 'password': password,
-      'nip': nip,
-      'nik': nik,
       'phone': phone,
+      'externalId': externalId,
+      'isNew': isNew,
+      'emailVerifiedAt': emailVerifiedAt,
+      'kontak': kontak,
+      'signFile': signFile,
+      'fotoFile': fotoFile,
+      'status': status,
+      'expiredDate': expiredDate,
+      'departmentName': departmentName,
+      'divisionName': divisionName,
+      'teamName': teamName,
+      'role': role,
+      'fcmToken': fcmToken,
     };
   }
 
@@ -45,19 +85,39 @@ class UserModel {
     int? id,
     String? name,
     String? email,
-    String? password,
-    String? nip,
-    String? nik,
     String? phone,
+    int? externalId,
+    int? isNew,
+    String? emailVerifiedAt,
+    String? kontak,
+    String? signFile,
+    String? fotoFile,
+    int? status,
+    String? expiredDate,
+    String? departmentName,
+    String? divisionName,
+    String? teamName,
+    String? role,
+    String? fcmToken,
   }) {
     return UserModel(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
-      // password: password ?? this.password,
-      nip: nip ?? this.nip,
-      nik: nik ?? this.nik,
       phone: phone ?? this.phone,
+      externalId: externalId ?? this.externalId,
+      isNew: isNew ?? this.isNew,
+      emailVerifiedAt: emailVerifiedAt ?? this.emailVerifiedAt,
+      kontak: kontak ?? this.kontak,
+      signFile: signFile ?? this.signFile,
+      fotoFile: fotoFile ?? this.fotoFile,
+      status: status ?? this.status,
+      expiredDate: expiredDate ?? this.expiredDate,
+      departmentName: departmentName ?? this.departmentName,
+      divisionName: divisionName ?? this.divisionName,
+      teamName: teamName ?? this.teamName,
+      role: role ?? this.role,
+      fcmToken: fcmToken ?? this.fcmToken,
     );
   }
 }
